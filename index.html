@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gouthaman G — Security Researcher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e0e10;
+  --surface:#17171a;
+  --surface-2:#1e1e22;
+  --line: rgba(244,242,238,0.10);
+  --text:#f4f2ee;
+  --muted:#8a8782;
+  --accent:#6a6af5;
+  --accent-soft: rgba(106,106,245,0.14);
+  --serif: 'Fraunces', serif;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+*{margin:0; padding:0; box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg); color:var(--text); font-family:var(--sans);
+  line-height:1.6; overflow-x:hidden; cursor:default;
+}
+::selection{background:var(--accent); color:#fff;}
+a{color:inherit; text-decoration:none;}
+.wrap{max-width:1080px; margin:0 auto; padding:0 32px;}
+img{max-width:100%; display:block;}
+
+/* progress rail */
+.rail{
+  position:fixed; top:0; right:26px; height:100vh; width:2px; z-index:60;
+  display:flex; align-items:center; pointer-events:none;
+}
+.rail-track{position:relative; width:2px; height:60vh; background:var(--line); border-radius:2px;}
+.rail-fill{position:absolute; top:0; left:0; width:100%; height:0%; background:var(--accent); border-radius:2px; transition:height .08s linear;}
+@media (max-width:900px){.rail{display:none;}}
+
+/* nav */
+nav{
+  position:fixed; top:0; left:0; right:0; z-index:50;
+  padding:26px 0; mix-blend-mode:difference;
+}
+nav .wrap{display:flex; justify-content:space-between; align-items:center;}
+.brand{font-family:var(--serif); font-size:19px; font-style:italic; letter-spacing:0.3px;}
+.navlinks{display:flex; gap:30px; font-family:var(--mono); font-size:11.5px; letter-spacing:0.5px; text-transform:uppercase;}
+.navlinks a{opacity:0.75; transition:opacity .2s;}
+.navlinks a:hover{opacity:1;}
+@media (max-width:760px){.navlinks{display:none;}}
+
+/* magnetic buttons */
+.btn{
+  position:relative; display:inline-flex; align-items:center; gap:10px;
+  font-family:var(--mono); font-size:12.5px; letter-spacing:0.3px;
+  padding:15px 26px; border-radius:100px; border:1px solid var(--line);
+  transition:border-color .25s, background .25s, color .25s;
+  will-change:transform;
+}
+.btn.primary{background:var(--text); color:var(--bg); border-color:var(--text);}
+.btn.primary:hover{background:var(--accent); border-color:var(--accent); color:#fff;}
+.btn.ghost:hover{border-color:var(--accent); color:var(--accent);}
+
+/* hero */
+.hero{
+  min-height:100vh; display:flex; flex-direction:column; justify-content:center;
+  padding-top:120px; padding-bottom:80px; position:relative;
+}
+.hero-eyebrow{
+  font-family:var(--mono); font-size:12px; color:var(--muted); letter-spacing:1.5px;
+  text-transform:uppercase; margin-bottom:26px;
+  display:flex; align-items:center; gap:10px;
+}
+.hero-eyebrow::before{content:''; width:7px; height:7px; border-radius:50%; background:var(--accent); display:inline-block;}
+.hero h1{
+  font-family:var(--serif); font-weight:600; font-size:clamp(48px, 8vw, 104px);
+  line-height:0.98; letter-spacing:-2px; overflow:hidden;
+}
+.hero h1 .line{display:block; overflow:hidden;}
+.hero h1 .word{
+  display:inline-block; transform:translateY(115%); opacity:0;
+  animation: riseIn .9s cubic-bezier(.19,1,.22,1) forwards;
+}
+@keyframes riseIn{ to{transform:translateY(0); opacity:1;} }
+.hero h1 .accent{font-style:italic; color:var(--accent);}
+.hero-sub{
+  margin-top:32px; max-width:560px; font-size:17px; color:var(--muted);
+  opacity:0; animation: fadeUp .8s ease .9s forwards;
+}
+.hero-tags{
+  margin-top:28px; display:flex; gap:10px; flex-wrap:wrap;
+  opacity:0; animation: fadeUp .8s ease 1.05s forwards;
+}
+.hero-tags span{
+  font-family:var(--mono); font-size:11px; padding:6px 13px; border:1px solid var(--line);
+  border-radius:100px; color:var(--muted);
+}
+.hero-cta{margin-top:40px; display:flex; gap:16px; flex-wrap:wrap; opacity:0; animation: fadeUp .8s ease 1.2s forwards;}
+@keyframes fadeUp{from{opacity:0; transform:translateY(16px);} to{opacity:1; transform:translateY(0);}}
+
+/* reveal on scroll */
+.reveal{opacity:0; transform:translateY(36px); transition:opacity .9s cubic-bezier(.19,1,.22,1), transform .9s cubic-bezier(.19,1,.22,1);}
+.reveal.visible{opacity:1; transform:translateY(0);}
+.reveal-stagger > *{opacity:0; transform:translateY(28px); transition:opacity .7s ease, transform .7s ease;}
+.reveal-stagger.visible > *{opacity:1; transform:translateY(0);}
+.reveal-stagger.visible > *:nth-child(1){transition-delay:.05s;}
+.reveal-stagger.visible > *:nth-child(2){transition-delay:.15s;}
+.reveal-stagger.visible > *:nth-child(3){transition-delay:.25s;}
+.reveal-stagger.visible > *:nth-child(4){transition-delay:.35s;}
+.reveal-stagger.visible > *:nth-child(5){transition-delay:.45s;}
+.reveal-stagger.visible > *:nth-child(6){transition-delay:.55s;}
+
+/* sections */
+section{padding:130px 0; border-top:1px solid var(--line); position:relative;}
+.sec-tag{font-family:var(--mono); font-size:12px; color:var(--accent); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:18px;}
+.sec-title{font-family:var(--serif); font-size:clamp(30px, 4vw, 46px); font-weight:600; letter-spacing:-1px; margin-bottom:20px;}
+.sec-title em{color:var(--accent); font-style:italic;}
+
+/* about */
+.about-grid{display:grid; grid-template-columns:1.4fr 1fr; gap:70px; align-items:start;}
+.about-grid p{color:#c8c5be; font-size:16.5px; margin-bottom:18px; max-width:560px;}
+.about-grid strong{color:var(--text);}
+.fact-list{display:flex; flex-direction:column; gap:0;}
+.fact{padding:18px 0; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; gap:20px;}
+.fact:first-child{padding-top:0;}
+.fact .k{font-family:var(--mono); font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px;}
+.fact .v{font-size:14.5px; text-align:right;}
+
+/* pillars */
+.pillars{display:grid; grid-template-columns:repeat(3,1fr); gap:2px; background:var(--line); border-radius:14px; overflow:hidden; margin-top:10px;}
+.pillar{background:var(--surface); padding:38px 32px;}
+.pillar .num{font-family:var(--mono); font-size:12px; color:var(--muted);}
+.pillar h3{font-family:var(--serif); font-size:24px; font-weight:600; margin:16px 0 12px;}
+.pillar p{color:#a9a6a0; font-size:14.5px;}
+@media(max-width:820px){.pillars{grid-template-columns:1fr;}}
+
+/* projects — case study rows */
+.case{
+  display:grid; grid-template-columns:0.9fr 1.5fr; gap:60px;
+  padding:56px 0; border-bottom:1px solid var(--line);
+}
+.case:last-child{border-bottom:none;}
+.case-left .case-tag{font-family:var(--mono); font-size:11px; color:var(--accent); text-transform:uppercase; letter-spacing:1px;}
+.case-left h3{font-family:var(--serif); font-size:32px; font-weight:600; margin:14px 0 16px; letter-spacing:-0.5px;}
+.case-left .case-meta{font-family:var(--mono); font-size:12px; color:var(--muted);}
+.case-right p{color:#c8c5be; font-size:15.5px; margin-bottom:16px;}
+.case-stack{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px;}
+.case-stack span{
+  font-family:var(--mono); font-size:11px; color:var(--muted); border:1px solid var(--line);
+  padding:5px 11px; border-radius:100px;
+}
+.case-list{list-style:none;}
+.case-list li{
+  font-size:14.5px; color:#c8c5be; padding:6px 0 6px 20px; position:relative;
+}
+.case-list li::before{content:'—'; position:absolute; left:0; color:var(--accent);}
+@media(max-width:800px){.case{grid-template-columns:1fr; gap:20px;}}
+
+/* CTF section */
+.ctf-intro{display:grid; grid-template-columns:1.3fr 1fr; gap:60px; margin-bottom:60px; align-items:start;}
+.ctf-intro p{color:#c8c5be; font-size:16px; margin-bottom:16px; max-width:560px;}
+.ctf-card{
+  background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:28px 30px;
+}
+.ctf-card .team-name{font-family:var(--serif); font-size:22px; font-style:italic; margin-bottom:4px;}
+.ctf-card .team-sub{font-family:var(--mono); font-size:11.5px; color:var(--muted); margin-bottom:20px;}
+.ctf-stats{display:flex; gap:28px; margin-bottom:20px; flex-wrap:wrap;}
+.ctf-stats .stat b{display:block; font-family:var(--serif); font-size:28px; color:var(--accent);}
+.ctf-stats .stat span{font-family:var(--mono); font-size:10.5px; color:var(--muted); text-transform:uppercase;}
+.ctf-card a.recruit{font-family:var(--mono); font-size:12px; color:var(--accent); border-bottom:1px solid var(--accent); padding-bottom:2px;}
+
+.results-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:50px;}
+.result{
+  background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:20px;
+}
+.result .place{font-family:var(--serif); font-size:30px; font-weight:600; color:var(--accent);}
+.result .place span{font-size:14px; color:var(--muted); font-family:var(--mono);}
+.result .event{font-size:13.5px; margin-top:8px; color:#c8c5be;}
+.result .pts{font-family:var(--mono); font-size:11px; color:var(--muted); margin-top:6px;}
+@media(max-width:860px){.results-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:520px){.results-grid{grid-template-columns:1fr;}}
+
+.roster-label{font-family:var(--mono); font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:16px;}
+.roster{display:flex; flex-wrap:wrap; gap:10px;}
+.roster span{
+  font-family:var(--mono); font-size:12px; padding:7px 14px; border:1px solid var(--line);
+  border-radius:100px; color:#c8c5be;
+}
+.roster span.me{border-color:var(--accent); color:var(--accent);}
+
+/* skills */
+.skill-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:2px; background:var(--line); border-radius:14px; overflow:hidden;}
+.skill-card{background:var(--surface); padding:32px;}
+.skill-card h4{font-family:var(--mono); font-size:12px; color:var(--accent); text-transform:uppercase; letter-spacing:1px; margin-bottom:18px;}
+.skill-card ul{list-style:none;}
+.skill-card li{font-size:14.5px; color:#c8c5be; padding:6px 0; border-bottom:1px solid var(--line);}
+.skill-card li:last-child{border-bottom:none;}
+@media(max-width:820px){.skill-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:520px){.skill-grid{grid-template-columns:1fr;}}
+
+/* certs */
+.cert-row{display:flex; flex-direction:column;}
+.cert-item{
+  display:flex; justify-content:space-between; align-items:center; padding:24px 0;
+  border-bottom:1px solid var(--line); gap:20px; flex-wrap:wrap;
+}
+.cert-item:first-child{padding-top:0;}
+.cert-item h4{font-family:var(--serif); font-size:20px; font-weight:600;}
+.cert-item .issuer{font-family:var(--mono); font-size:12px; color:var(--muted); margin-top:4px;}
+.cert-status{
+  font-family:var(--mono); font-size:10.5px; padding:5px 12px; border-radius:100px;
+  border:1px solid var(--accent); color:var(--accent); text-transform:uppercase; letter-spacing:0.5px;
+}
+
+/* contact */
+footer{padding:130px 0 60px;}
+.contact-title{font-family:var(--serif); font-size:clamp(40px,7vw,84px); font-weight:600; letter-spacing:-2px; margin-bottom:40px;}
+.contact-title em{color:var(--accent); font-style:italic;}
+.contact-links{display:flex; flex-wrap:wrap; gap:16px; margin-bottom:70px;}
+.foot-bottom{display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px; font-family:var(--mono); font-size:11.5px; color:var(--muted);}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.01ms !important; transition-duration:.01ms !important;}
+  .hero h1 .word{opacity:1; transform:none;}
+}
+a:focus-visible, .btn:focus-visible{outline:2px solid var(--accent); outline-offset:3px;}
+</style>
+</head>
+<body>
+
+<div class="rail"><div class="rail-track"><div class="rail-fill" id="railFill"></div></div></div>
+
+<nav>
+  <div class="wrap">
+    <div class="brand">Gouthaman<span style="color:var(--accent)">.</span></div>
+    <div class="navlinks">
+      <a href="#about">About</a>
+      <a href="#focus">Focus</a>
+      <a href="#work">Work</a>
+      <a href="#ctf">CTF</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero wrap">
+  <h1>
+    <span class="line"><span class="word accent" style="animation-delay:.31s">Web Application</span>
+    <span class="line"><span class="word" style="animation-delay:.05s">Security</span></span>
+    <span class="line"><span class="word" style="animation-delay:.18s">researcher.</span></span>
+    
+  </h1>
+  <p class="hero-sub">Gouthaman G — final-year B.Tech Cybersecurity student building toward a career in VAPT and application security, one CTF flag and one custom-built scanner at a time.</p>
+  <div class="hero-tags">
+    <span>VAPT</span><span>PJPT (in progress)</span><span>API Security</span><span>CTF — Team Hunter</span>
+  </div>
+  <div class="hero-cta">
+    <a class="btn primary" href="#work">See the work →</a>
+    <a class="btn ghost" href="https://drive.google.com/file/d/1_lVWXNu2O3LgYDXMFwQ3wbZZZM2gPd7T/view?usp=sharing" target="_blank" rel="noopener">Download résumé</a>
+  </div>
+</header>
+
+<section id="about">
+  <div class="wrap reveal">
+    <div class="sec-tag">About</div>
+    <div class="about-grid">
+      <div>
+        <p>I'm a <strong>final-year B.Tech Cybersecurity student</strong> at Amrita Vishwa Vidyapeetham, Coimbatore, graduating in 2027. My core focus is <strong>Vulnerability Assessment &amp; Penetration Testing (VAPT)</strong> — I'm currently working toward the <strong>Practical Junior Penetration Tester (PJPT)</strong> certification and building my offensive security fundamentals through structured lab work on PortSwigger's Web Security Academy.</p>
+        <p><strong>API security is one of the domains I specialize in</strong> within that broader VAPT practice — it's where a lot of my project work lives, because API attack surfaces (BOLA, broken auth, GraphQL misconfigurations) reward exactly the kind of tool-building I enjoy. But my interests extend across web app pentesting, network security, and competitive security research through CTFs.</p>
+        <p>I learn best by building — if I want to understand a vulnerability class properly, I write a scanner that finds it, then test it against deliberately vulnerable labs until it holds up.</p>
+      </div>
+      <div class="fact-list">
+        <div class="fact"><span class="k">Year</span><span class="v">Final year (2027)</span></div>
+        <div class="fact"><span class="k">Institution</span><span class="v">Amrita Vishwa Vidyapeetham</span></div>
+        <div class="fact"><span class="k">Primary focus</span><span class="v">VAPT</span></div>
+        <div class="fact"><span class="k">In progress</span><span class="v">PJPT — TCM Security</span></div>
+        <div class="fact"><span class="k">Specialization</span><span class="v">API Security</span></div>
+        <div class="fact"><span class="k">Team</span><span class="v">Team Hunter (CTF)</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="focus">
+  <div class="wrap reveal">
+    <div class="sec-tag">Focus</div>
+    <h2 class="sec-title">Three practices, <em>one instinct</em>: break it to understand it.</h2>
+    <div class="pillars reveal-stagger">
+      <div class="pillar">
+        <div class="num">01</div>
+        <h3>VAPT</h3>
+        <p>Structured, methodology-driven assessment of web applications and networks — working toward PJPT while practicing on PortSwigger's Web Security Academy and lab environments like crAPI and DVGA.</p>
+      </div>
+      <div class="pillar">
+        <div class="num">02</div>
+        <h3>API Security</h3>
+        <p>My specialization within VAPT. Deep, hands-on work with the OWASP API Top 10 — BOLA, mass assignment, broken auth, GraphQL misconfigurations — expressed through Aegis-API and a schema-aware zero-trust gateway.</p>
+      </div>
+      <div class="pillar">
+        <div class="num">03</div>
+        <h3>Competitive Security</h3>
+        <p>Sharpening the same instincts under time pressure with Team Hunter — crypto, pwn, web, and reversing across 60+ CTF events, ranked 68th globally and 7th in India in 2026.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="work">
+  <div class="wrap reveal">
+    <div class="sec-tag">Selected work</div>
+    <h2 class="sec-title">Projects, built to <em>find what review misses</em>.</h2>
+
+    <div class="case">
+      <div class="case-left">
+        <div class="case-tag">Flagship project</div>
+        <h3>Aegis-API</h3>
+        <div class="case-meta">Python · REST / SOAP / GraphQL · 17+ build phases</div>
+      </div>
+      <div class="case-right">
+        <p>A multi-protocol API penetration testing framework I built to properly understand the OWASP API Security Top 10 — not just read about it. It scans REST, SOAP, and GraphQL services end to end: discovering endpoints via Swagger/OpenAPI and WSDL enumeration, mapping GraphQL schemas through introspection, then actively probing for the vulnerability classes that matter most in modern APIs.</p>
+        <div class="case-stack">
+          <span>Python</span><span>Requests</span><span>LXML</span><span>FPDF2</span><span>Docker</span><span>GitHub Actions</span>
+        </div>
+        <ul class="case-list">
+          <li>Automated detection for BOLA, broken authentication, mass assignment, and rate-limiting flaws</li>
+          <li>Dynamic CVSS v3.1 scoring with evidence collection and auto-generated VAPT reports</li>
+          <li>Tested against intentionally vulnerable labs — crAPI, DVGA — to validate real detection accuracy</li>
+          <li>CI/CD security testing pipeline via GitHub Actions for continuous assessment</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="case">
+      <div class="case-left">
+        <div class="case-tag">Final year project</div>
+        <h3>Zero-Trust Gateway for GraphQL</h3>
+        <div class="case-meta">Schema validation · Authorization enforcement</div>
+      </div>
+      <div class="case-right">
+        <p>An in-progress security gateway that stops one of the most common real-world GraphQL failures: Broken Object Level Authorization. Instead of trusting a resolver to check permissions correctly, the gateway enforces authorization at the schema level under a zero-trust model — every field access is validated against the requester's actual permissions, regardless of what the query looks like.</p>
+        <div class="case-stack">
+          <span>GraphQL Security</span><span>Zero-Trust Architecture</span><span>Schema Validation</span><span>BOLA Prevention</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="case">
+      <div class="case-left">
+        <div class="case-tag">Network security</div>
+        <h3>Intrusion Prevention System</h3>
+        <div class="case-meta">Python · Scapy · iptables</div>
+      </div>
+      <div class="case-right">
+        <p>A network intrusion prevention system built to understand detection and response at the packet level. It inspects traffic in real time with Scapy and enforces blocking decisions dynamically through iptables, rather than relying on static, pre-defined rules alone.</p>
+        <div class="case-stack">
+          <span>Python</span><span>Scapy</span><span>iptables</span>
+        </div>
+        <ul class="case-list">
+          <li>10+ custom rules detecting ICMP/UDP/SYN floods, SQLi, XSS, and directory traversal</li>
+          <li>Automated suspicious-IP blocking with full event logging for post-incident analysis</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="ctf">
+  <div class="wrap reveal">
+    <div class="sec-tag">Competitive security</div>
+    <h2 class="sec-title">Team <em>Hunter</em>.</h2>
+    <div class="ctf-intro">
+      <div>
+        <p>I compete with <strong>Team Hunter</strong>, an academic CTF team from Amrita Vishwa Vidyapeetham. We're driven by curiosity and a love for hard problems — crypto, pwn, web, and reversing — and we aim to learn something new with every flag we capture.</p>
+        <p>In 2026 the team placed <strong>68th globally</strong> and <strong>7th in India</strong> across 60+ competitive events, with several podium and top-5 finishes along the way.</p>
+      </div>
+      <div class="ctf-card">
+        <div class="team-name">Team Hunter</div>
+        <div class="team-sub">Te@/\/\ #unter · Academic Team, Amrita Vishwa Vidyapeetham</div>
+        <div class="ctf-stats">
+          <div class="stat"><b>68th</b><span>Global rank 2026</span></div>
+          <div class="stat"><b>7th</b><span>India rank</span></div>
+          <div class="stat"><b>60+</b><span>events entered</span></div>
+        </div>
+        <a class="recruit" href="https://docs.google.com/forms/d/e/1FAIpQLSdWl8T_9NpnCgC253aYGN1r6KY4U4rGGDVQpAYvtSZxSLlVaQ/viewform?usp=publish-editor" target="_blank" rel="noopener">We're actively recruiting →</a>
+      </div>
+    </div>
+
+    <div class="roster-label">Notable placements — 2026</div>
+    <div class="results-grid reveal-stagger">
+      <div class="result">
+        <div class="place">#1 <span>/ 1st</span></div>
+        <div class="event">SecLeaf Q2 CTF 2026</div>
+        <div class="pts">6,195 pts</div>
+      </div>
+      <div class="result">
+        <div class="place">#3 <span>/ 3rd</span></div>
+        <div class="event">Hackअस्त्र</div>
+        <div class="pts">7,844 pts</div>
+      </div>
+      <div class="result">
+        <div class="place">#3 <span>/ 3rd</span></div>
+        <div class="event">RAMunchers CTF</div>
+        <div class="pts">3,458 pts</div>
+      </div>
+      <div class="result">
+        <div class="place">#4 <span>/ 4th</span></div>
+        <div class="event">ZeroDay Heist 2026</div>
+        <div class="pts">9,673 pts</div>
+      </div>
+      <div class="result">
+        <div class="place">#4 <span>/ 4th</span></div>
+        <div class="event">bhackari CTF 2026</div>
+        <div class="pts">4,158 pts</div>
+      </div>
+      <div class="result">
+        <div class="place">#4 <span>/ 4th</span></div>
+        <div class="event">HASBLCTF26</div>
+        <div class="pts">8,150 pts</div>
+      </div>
+      <div class="result">
+        <div class="place">#5 <span>/ 5th</span></div>
+        <div class="event">CryptoNite CTF 2026</div>
+        <div class="pts">3,356 pts</div>
+      </div>
+      <div class="result">
+        <div class="place">#6 <span>/ 6th</span></div>
+        <div class="event">plfanzen CFT 2026</div>
+        <div class="pts">3,707 pts</div>
+      </div>
+    </div>    
+  </div>
+</section>
+
+<section id="skills">
+  <div class="wrap reveal">
+    <div class="sec-tag">Toolkit</div>
+    <div class="skill-grid">
+      <div class="skill-card">
+        <h4>Offensive tools</h4>
+        <ul>
+          <li>Burp Suite</li><li>Nmap</li><li>Metasploit Framework</li>
+          <li>Nessus Essentials</li><li>Wireshark</li><li>OWASP ZAP</li>
+        </ul>
+      </div>
+      <div class="skill-card">
+        <h4>Domain knowledge</h4>
+        <ul>
+          <li>OWASP Top 10 &amp; API Top 10</li><li>BOLA / IDOR</li>
+          <li>SQLi, XSS, CSRF</li><li>JWT &amp; auth vulnerabilities</li>
+          <li>GraphQL security</li><li>CVSS v3.1 scoring</li>
+        </ul>
+      </div>
+      <div class="skill-card">
+        <h4>Build stack</h4>
+        <ul>
+          <li>Python</li><li>Bash scripting</li><li>Docker</li>
+          <li>Git / GitHub Actions</li><li>Kali Linux</li><li>C</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="certs">
+  <div class="wrap reveal">
+    <div class="sec-tag">Certifications</div>
+    <div class="cert-row">
+      <div class="cert-item">
+        <div>
+          <h4>Practical Junior Penetration Tester (PJPT)</h4>
+          <div class="issuer">TCM Security</div>
+        </div>
+        <div class="cert-status">In progress</div>
+      </div>
+      <div class="cert-item">
+        <div>
+          <h4>Cisco Ethical Hacker</h4>
+          <div class="issuer">Cisco</div>
+        </div>
+      </div>
+      <div class="cert-item">
+        <div>
+          <h4>Cisco Networking Fundamentals</h4>
+          <div class="issuer">Cisco</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="wrap reveal">
+    <div class="sec-tag">Contact</div>
+    <h2 class="contact-title">Let's Connect...</h2>
+    <div class="contact-links">
+      <a class="btn primary" href="mailto:goutham240605@gmail.com">goutham240605@gmail.com</a>
+      <a class="btn ghost" href="tel:+918675115970">+91 8675115970</a>
+      <a class="btn ghost" href="https://www.linkedin.com/in/gouthaman-g-0296b1288" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn ghost" href="https://team-hunter.tech" target="_blank" rel="noopener">Team Hunter</a>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Gouthaman G</span>
+      <span>Tiruchirappalli, India</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// scroll progress rail
+const railFill = document.getElementById('railFill');
+function updateRail(){
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  railFill.style.height = pct + '%';
+}
+window.addEventListener('scroll', updateRail, { passive:true });
+updateRail();
+
+// scroll reveal
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.reveal, .reveal-stagger').forEach(el=>{
+  if(reduce){ el.classList.add('visible'); }
+  else{ observer.observe(el); }
+});
+
+// magnetic buttons
+if(!reduce && window.matchMedia('(pointer:fine)').matches){
+  document.querySelectorAll('.btn').forEach(btn=>{
+    btn.addEventListener('mousemove', (e)=>{
+      const rect = btn.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width/2;
+      const y = e.clientY - rect.top - rect.height/2;
+      btn.style.transform = `translate(${x*0.25}px, ${y*0.35}px)`;
+    });
+    btn.addEventListener('mouseleave', ()=>{
+      btn.style.transform = 'translate(0,0)';
+    });
+  });
+}
+</script>
+
+</body>
+</html>
