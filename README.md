@@ -31,36 +31,7 @@ This portfolio showcases my background, technical skills, cybersecurity projects
 ```text
 portfolio/
 ├── index.html
-├── style.css
-├── script.js
-├── assets/
-│   ├── images/
-│   ├── icons/
-│   └── resume.pdf
 └── README.md
-```
-
-## Running Locally
-
-Clone the repository:
-
-```bash
-git clone https://github.com/Gouthaman2465/portfolio.git
-cd portfolio
-```
-
-Open `index.html` in your browser, or use a local server.
-
-Using Python:
-
-```bash
-python -m http.server
-```
-
-Then visit:
-
-```
-http://localhost:8000
 ```
 
 ## Deployment
@@ -73,8 +44,7 @@ The website is hosted using **GitHub Pages** and is available at:
 
 * Website: https://gouthaman.me
 * GitHub: https://github.com/Gouthaman2465
-* LinkedIn: *(Add your LinkedIn profile here)*
-* Email: *(Add your email address here)*
+* LinkedIn: https://www.linkedin.com/in/gouthaman-g-0296b1288
 
 ---
 
