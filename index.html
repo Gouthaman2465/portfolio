@@ -3,554 +3,1430 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gouthaman G — Security Researcher</title>
+<title>Gouthaman G — Application & API Security Engineer</title>
+<meta name="description" content="Portfolio of Gouthaman G — Application Security Engineer specializing in API security (BOLA/IDOR, Mass Assignment), OWASP Top 10, AST parsers, and automated security testing frameworks.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#0e0e10;
-  --surface:#17171a;
-  --surface-2:#1e1e22;
-  --line: rgba(244,242,238,0.10);
-  --text:#f4f2ee;
-  --muted:#8a8782;
-  --accent:#6a6af5;
-  --accent-soft: rgba(106,106,245,0.14);
-  --serif: 'Fraunces', serif;
-  --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --mono: 'IBM Plex Mono', ui-monospace, monospace;
-}
-*{margin:0; padding:0; box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{
-  background:var(--bg); color:var(--text); font-family:var(--sans);
-  line-height:1.6; overflow-x:hidden; cursor:default;
-}
-::selection{background:var(--accent); color:#fff;}
-a{color:inherit; text-decoration:none;}
-.wrap{max-width:1080px; margin:0 auto; padding:0 32px;}
-img{max-width:100%; display:block;}
+:root {
+  --bg: #090d16;
+  --surface: #0f172a;
+  --surface-elevated: #162036;
+  --surface-border: rgba(99, 102, 241, 0.16);
+  --surface-border-hover: rgba(99, 102, 241, 0.4);
+  --line: rgba(148, 163, 184, 0.12);
+  --text: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  
+  /* Option C: Clean Enterprise Security (Indigo, Cobalt, Cyan) */
+  --accent: #6366f1;
+  --accent-light: #818cf8;
+  --accent-glow: rgba(99, 102, 241, 0.25);
+  --accent-cyan: #38bdf8;
+  --accent-emerald: #10b981;
+  
+  /* CVSS Severity Indicators */
+  --sev-critical: #ef4444;
+  --sev-high: #f97316;
+  --sev-med: #eab308;
+  --sev-low: #3b82f6;
 
-/* progress rail */
-.rail{
-  position:fixed; top:0; right:26px; height:100vh; width:2px; z-index:60;
-  display:flex; align-items:center; pointer-events:none;
-}
-.rail-track{position:relative; width:2px; height:60vh; background:var(--line); border-radius:2px;}
-.rail-fill{position:absolute; top:0; left:0; width:100%; height:0%; background:var(--accent); border-radius:2px; transition:height .08s linear;}
-@media (max-width:900px){.rail{display:none;}}
-
-/* nav */
-nav{
-  position:fixed; top:0; left:0; right:0; z-index:50;
-  padding:26px 0; mix-blend-mode:difference;
-}
-nav .wrap{display:flex; justify-content:space-between; align-items:center;}
-.brand{font-family:var(--serif); font-size:19px; font-style:italic; letter-spacing:0.3px;}
-.navlinks{display:flex; gap:30px; font-family:var(--mono); font-size:11.5px; letter-spacing:0.5px; text-transform:uppercase;}
-.navlinks a{opacity:0.75; transition:opacity .2s;}
-.navlinks a:hover{opacity:1;}
-@media (max-width:760px){.navlinks{display:none;}}
-
-/* magnetic buttons */
-.btn{
-  position:relative; display:inline-flex; align-items:center; gap:10px;
-  font-family:var(--mono); font-size:12.5px; letter-spacing:0.3px;
-  padding:15px 26px; border-radius:100px; border:1px solid var(--line);
-  transition:border-color .25s, background .25s, color .25s;
-  will-change:transform;
-}
-.btn.primary{background:var(--text); color:var(--bg); border-color:var(--text);}
-.btn.primary:hover{background:var(--accent); border-color:var(--accent); color:#fff;}
-.btn.ghost:hover{border-color:var(--accent); color:var(--accent);}
-
-/* hero */
-.hero{
-  min-height:100vh; display:flex; flex-direction:column; justify-content:center;
-  padding-top:120px; padding-bottom:80px; position:relative;
-}
-.hero-eyebrow{
-  font-family:var(--mono); font-size:12px; color:var(--muted); letter-spacing:1.5px;
-  text-transform:uppercase; margin-bottom:26px;
-  display:flex; align-items:center; gap:10px;
-}
-.hero-eyebrow::before{content:''; width:7px; height:7px; border-radius:50%; background:var(--accent); display:inline-block;}
-.hero h1{
-  font-family:var(--serif); font-weight:600; font-size:clamp(48px, 8vw, 104px);
-  line-height:0.98; letter-spacing:-2px; overflow:hidden;
-}
-.hero h1 .line{display:block; overflow:hidden;}
-.hero h1 .word{
-  display:inline-block; transform:translateY(115%); opacity:0;
-  animation: riseIn .9s cubic-bezier(.19,1,.22,1) forwards;
-}
-@keyframes riseIn{ to{transform:translateY(0); opacity:1;} }
-.hero h1 .accent{font-style:italic; color:var(--accent);}
-.hero-sub{
-  margin-top:32px; max-width:560px; font-size:17px; color:var(--muted);
-  opacity:0; animation: fadeUp .8s ease .9s forwards;
-}
-.hero-tags{
-  margin-top:28px; display:flex; gap:10px; flex-wrap:wrap;
-  opacity:0; animation: fadeUp .8s ease 1.05s forwards;
-}
-.hero-tags span{
-  font-family:var(--mono); font-size:11px; padding:6px 13px; border:1px solid var(--line);
-  border-radius:100px; color:var(--muted);
-}
-.hero-cta{margin-top:40px; display:flex; gap:16px; flex-wrap:wrap; opacity:0; animation: fadeUp .8s ease 1.2s forwards;}
-@keyframes fadeUp{from{opacity:0; transform:translateY(16px);} to{opacity:1; transform:translateY(0);}}
-
-/* reveal on scroll */
-.reveal{opacity:0; transform:translateY(36px); transition:opacity .9s cubic-bezier(.19,1,.22,1), transform .9s cubic-bezier(.19,1,.22,1);}
-.reveal.visible{opacity:1; transform:translateY(0);}
-.reveal-stagger > *{opacity:0; transform:translateY(28px); transition:opacity .7s ease, transform .7s ease;}
-.reveal-stagger.visible > *{opacity:1; transform:translateY(0);}
-.reveal-stagger.visible > *:nth-child(1){transition-delay:.05s;}
-.reveal-stagger.visible > *:nth-child(2){transition-delay:.15s;}
-.reveal-stagger.visible > *:nth-child(3){transition-delay:.25s;}
-.reveal-stagger.visible > *:nth-child(4){transition-delay:.35s;}
-.reveal-stagger.visible > *:nth-child(5){transition-delay:.45s;}
-.reveal-stagger.visible > *:nth-child(6){transition-delay:.55s;}
-
-/* sections */
-section{padding:130px 0; border-top:1px solid var(--line); position:relative;}
-.sec-tag{font-family:var(--mono); font-size:12px; color:var(--accent); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:18px;}
-.sec-title{font-family:var(--serif); font-size:clamp(30px, 4vw, 46px); font-weight:600; letter-spacing:-1px; margin-bottom:20px;}
-.sec-title em{color:var(--accent); font-style:italic;}
-
-/* about */
-.about-grid{display:grid; grid-template-columns:1.4fr 1fr; gap:70px; align-items:start;}
-.about-grid p{color:#c8c5be; font-size:16.5px; margin-bottom:18px; max-width:560px;}
-.about-grid strong{color:var(--text);}
-.fact-list{display:flex; flex-direction:column; gap:0;}
-.fact{padding:18px 0; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; gap:20px;}
-.fact:first-child{padding-top:0;}
-.fact .k{font-family:var(--mono); font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px;}
-.fact .v{font-size:14.5px; text-align:right;}
-
-/* pillars */
-.pillars{display:grid; grid-template-columns:repeat(3,1fr); gap:2px; background:var(--line); border-radius:14px; overflow:hidden; margin-top:10px;}
-.pillar{background:var(--surface); padding:38px 32px;}
-.pillar .num{font-family:var(--mono); font-size:12px; color:var(--muted);}
-.pillar h3{font-family:var(--serif); font-size:24px; font-weight:600; margin:16px 0 12px;}
-.pillar p{color:#a9a6a0; font-size:14.5px;}
-@media(max-width:820px){.pillars{grid-template-columns:1fr;}}
-
-/* projects — case study rows */
-.case{
-  display:grid; grid-template-columns:0.9fr 1.5fr; gap:60px;
-  padding:56px 0; border-bottom:1px solid var(--line);
-}
-.case:last-child{border-bottom:none;}
-.case-left .case-tag{font-family:var(--mono); font-size:11px; color:var(--accent); text-transform:uppercase; letter-spacing:1px;}
-.case-left h3{font-family:var(--serif); font-size:32px; font-weight:600; margin:14px 0 16px; letter-spacing:-0.5px;}
-.case-left .case-meta{font-family:var(--mono); font-size:12px; color:var(--muted);}
-.case-right p{color:#c8c5be; font-size:15.5px; margin-bottom:16px;}
-.case-stack{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px;}
-.case-stack span{
-  font-family:var(--mono); font-size:11px; color:var(--muted); border:1px solid var(--line);
-  padding:5px 11px; border-radius:100px;
-}
-.case-list{list-style:none;}
-.case-list li{
-  font-size:14.5px; color:#c8c5be; padding:6px 0 6px 20px; position:relative;
-}
-.case-list li::before{content:'—'; position:absolute; left:0; color:var(--accent);}
-@media(max-width:800px){.case{grid-template-columns:1fr; gap:20px;}}
-
-/* CTF section */
-.ctf-intro{display:grid; grid-template-columns:1.3fr 1fr; gap:60px; margin-bottom:60px; align-items:start;}
-.ctf-intro p{color:#c8c5be; font-size:16px; margin-bottom:16px; max-width:560px;}
-.ctf-card{
-  background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:28px 30px;
-}
-.ctf-card .team-name{font-family:var(--serif); font-size:22px; font-style:italic; margin-bottom:4px;}
-.ctf-card .team-sub{font-family:var(--mono); font-size:11.5px; color:var(--muted); margin-bottom:20px;}
-.ctf-stats{display:flex; gap:28px; margin-bottom:20px; flex-wrap:wrap;}
-.ctf-stats .stat b{display:block; font-family:var(--serif); font-size:28px; color:var(--accent);}
-.ctf-stats .stat span{font-family:var(--mono); font-size:10.5px; color:var(--muted); text-transform:uppercase;}
-.ctf-card a.recruit{font-family:var(--mono); font-size:12px; color:var(--accent); border-bottom:1px solid var(--accent); padding-bottom:2px;}
-
-.results-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:50px;}
-.result{
-  background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:20px;
-}
-.result .place{font-family:var(--serif); font-size:30px; font-weight:600; color:var(--accent);}
-.result .place span{font-size:14px; color:var(--muted); font-family:var(--mono);}
-.result .event{font-size:13.5px; margin-top:8px; color:#c8c5be;}
-.result .pts{font-family:var(--mono); font-size:11px; color:var(--muted); margin-top:6px;}
-@media(max-width:860px){.results-grid{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:520px){.results-grid{grid-template-columns:1fr;}}
-
-.roster-label{font-family:var(--mono); font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:16px;}
-.roster{display:flex; flex-wrap:wrap; gap:10px;}
-.roster span{
-  font-family:var(--mono); font-size:12px; padding:7px 14px; border:1px solid var(--line);
-  border-radius:100px; color:#c8c5be;
-}
-.roster span.me{border-color:var(--accent); color:var(--accent);}
-
-/* skills */
-.skill-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:2px; background:var(--line); border-radius:14px; overflow:hidden;}
-.skill-card{background:var(--surface); padding:32px;}
-.skill-card h4{font-family:var(--mono); font-size:12px; color:var(--accent); text-transform:uppercase; letter-spacing:1px; margin-bottom:18px;}
-.skill-card ul{list-style:none;}
-.skill-card li{font-size:14.5px; color:#c8c5be; padding:6px 0; border-bottom:1px solid var(--line);}
-.skill-card li:last-child{border-bottom:none;}
-@media(max-width:820px){.skill-grid{grid-template-columns:1fr 1fr;}}
-@media(max-width:520px){.skill-grid{grid-template-columns:1fr;}}
-
-/* certs */
-.cert-row{display:flex; flex-direction:column;}
-.cert-item{
-  display:flex; justify-content:space-between; align-items:center; padding:24px 0;
-  border-bottom:1px solid var(--line); gap:20px; flex-wrap:wrap;
-}
-.cert-item:first-child{padding-top:0;}
-.cert-item h4{font-family:var(--serif); font-size:20px; font-weight:600;}
-.cert-item .issuer{font-family:var(--mono); font-size:12px; color:var(--muted); margin-top:4px;}
-.cert-status{
-  font-family:var(--mono); font-size:10.5px; padding:5px 12px; border-radius:100px;
-  border:1px solid var(--accent); color:var(--accent); text-transform:uppercase; letter-spacing:0.5px;
+  --sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 }
 
-/* contact */
-footer{padding:130px 0 60px;}
-.contact-title{font-family:var(--serif); font-size:clamp(40px,7vw,84px); font-weight:600; letter-spacing:-2px; margin-bottom:40px;}
-.contact-title em{color:var(--accent); font-style:italic;}
-.contact-links{display:flex; flex-wrap:wrap; gap:16px; margin-bottom:70px;}
-.foot-bottom{display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px; font-family:var(--mono); font-size:11.5px; color:var(--muted);}
-
-@media (prefers-reduced-motion: reduce){
-  *{animation-duration:.01ms !important; transition-duration:.01ms !important;}
-  .hero h1 .word{opacity:1; transform:none;}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  line-height: 1.65;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 85% 70%, rgba(56, 189, 248, 0.06) 0%, transparent 45%),
+    linear-gradient(to bottom, rgba(9, 13, 22, 0.94), rgba(9, 13, 22, 0.98));
+  background-attachment: fixed;
 }
-a:focus-visible, .btn:focus-visible{outline:2px solid var(--accent); outline-offset:3px;}
+
+::selection { background: var(--accent); color: #fff; }
+a { color: inherit; text-decoration: none; }
+.wrap { max-width: 1140px; margin: 0 auto; padding: 0 28px; }
+img { max-width: 100%; display: block; }
+
+/* Scroll progress bar */
+.scroll-rail {
+  position: fixed; top: 0; left: 0; width: 100%; height: 3px; z-index: 100;
+  background: transparent;
+}
+.scroll-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-cyan));
+  transition: width 0.05s ease-out;
+}
+
+/* Nav */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 90;
+  backdrop-filter: blur(14px);
+  background: rgba(9, 13, 22, 0.82);
+  border-bottom: 1px solid var(--line);
+  transition: all 0.3s ease;
+}
+nav .wrap {
+  display: flex; justify-content: space-between; align-items: center;
+  height: 72px;
+}
+.brand {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--mono); font-size: 14.5px; font-weight: 700;
+  letter-spacing: -0.2px; color: var(--text);
+}
+.brand-badge {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  background: rgba(99, 102, 241, 0.15); color: var(--accent-light);
+  border: 1px solid rgba(99, 102, 241, 0.35); padding: 2px 7px;
+  border-radius: 4px; letter-spacing: 0.5px;
+}
+.navlinks {
+  display: flex; gap: 26px; align-items: center;
+  font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.2px;
+}
+.navlinks a {
+  color: var(--text-muted); transition: color 0.2s ease;
+  position: relative;
+}
+.navlinks a:hover { color: var(--text); }
+.navlinks a.active { color: var(--accent-cyan); font-weight: 600; }
+.nav-resume-btn {
+  font-family: var(--mono); font-size: 12px; font-weight: 600;
+  padding: 8px 16px; border-radius: 6px;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.4);
+  color: var(--accent-light); transition: all 0.2s;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.nav-resume-btn:hover {
+  background: var(--accent); color: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 0 16px var(--accent-glow);
+}
+
+/* Mobile Nav Toggle */
+.mobile-menu-btn {
+  display: none; background: none; border: none; color: var(--text);
+  font-size: 22px; cursor: pointer;
+}
+@media (max-width: 860px) {
+  .navlinks { display: none; }
+  .mobile-menu-btn { display: block; }
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 9px;
+  font-family: var(--mono); font-size: 13px; font-weight: 600;
+  padding: 12px 24px; border-radius: 8px; border: 1px solid transparent;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer; text-decoration: none;
+}
+.btn-primary {
+  background: var(--accent); color: #ffffff;
+  border-color: var(--accent-light);
+  box-shadow: 0 4px 18px rgba(99, 102, 241, 0.32);
+}
+.btn-primary:hover {
+  background: #4f46e5; transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(99, 102, 241, 0.45);
+}
+.btn-secondary {
+  background: rgba(22, 32, 54, 0.8);
+  border: 1px solid var(--surface-border);
+  color: var(--text);
+}
+.btn-secondary:hover {
+  background: var(--surface-elevated);
+  border-color: var(--accent-light);
+  color: #fff; transform: translateY(-2px);
+}
+.btn-outline-cyan {
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: var(--accent-cyan);
+}
+.btn-outline-cyan:hover {
+  background: rgba(56, 189, 248, 0.16);
+  border-color: var(--accent-cyan);
+  transform: translateY(-2px);
+}
+
+/* Hero Section */
+.hero {
+  min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+  padding: 140px 0 80px; position: relative;
+}
+.status-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px; border-radius: 100px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  font-family: var(--mono); font-size: 11.5px; color: var(--accent-emerald);
+  margin-bottom: 24px; width: fit-content;
+}
+.status-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--accent-emerald);
+  box-shadow: 0 0 8px var(--accent-emerald);
+  animation: pulse-dot 2s infinite ease-in-out;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+.hero h1 {
+  font-size: clamp(38px, 5.5vw, 68px);
+  font-weight: 800; line-height: 1.1; letter-spacing: -1.5px;
+  margin-bottom: 22px; max-width: 980px;
+}
+.hero h1 .gradient-text {
+  background: linear-gradient(135deg, #ffffff 40%, var(--accent-cyan) 85%, var(--accent-light) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero h1 .accent-indigo {
+  color: var(--accent-light);
+}
+
+.hero-lead {
+  font-size: clamp(16.5px, 2vw, 19px);
+  color: var(--text-muted); max-width: 760px;
+  line-height: 1.7; margin-bottom: 32px;
+}
+.hero-lead strong { color: var(--text); font-weight: 600; }
+
+.hero-meta-badges {
+  display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 38px;
+}
+.meta-badge {
+  font-family: var(--mono); font-size: 11.5px;
+  padding: 6px 13px; border-radius: 6px;
+  background: var(--surface); border: 1px solid var(--line);
+  color: var(--text-muted); display: inline-flex; align-items: center; gap: 6px;
+}
+.meta-badge.cert {
+  border-color: rgba(99, 102, 241, 0.35); color: var(--accent-light);
+  background: rgba(99, 102, 241, 0.08);
+}
+.meta-badge.labs {
+  border-color: rgba(56, 189, 248, 0.35); color: var(--accent-cyan);
+  background: rgba(56, 189, 248, 0.08);
+}
+
+.hero-cta { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 50px; }
+
+/* Interactive Terminal in Hero */
+.terminal-window {
+  background: #090e17;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55), 0 0 30px rgba(99, 102, 241, 0.08);
+  overflow: hidden;
+  margin-top: 10px;
+}
+.terminal-header {
+  background: #0c1322;
+  border-bottom: 1px solid var(--line);
+  padding: 12px 18px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.terminal-dots { display: flex; gap: 6px; }
+.terminal-dots span {
+  width: 11px; height: 11px; border-radius: 50%; display: inline-block;
+}
+.dot-red { background: #ef4444; opacity: 0.8; }
+.dot-yellow { background: #eab308; opacity: 0.8; }
+.dot-green { background: #10b981; opacity: 0.8; }
+.terminal-title {
+  font-family: var(--mono); font-size: 11.5px; color: var(--text-dim);
+  display: flex; align-items: center; gap: 8px;
+}
+.terminal-tabs {
+  display: flex; gap: 4px;
+}
+.term-tab {
+  font-family: var(--mono); font-size: 11px; padding: 4px 10px;
+  border-radius: 4px; background: transparent; border: 1px solid transparent;
+  color: var(--text-dim); cursor: pointer; transition: all 0.2s;
+}
+.term-tab.active {
+  background: rgba(99, 102, 241, 0.16); color: var(--accent-cyan);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+.terminal-body {
+  padding: 22px 24px; font-family: var(--mono); font-size: 13px; line-height: 1.7;
+  color: #e2e8f0; min-height: 220px; overflow-x: auto;
+}
+.term-prompt { color: var(--accent-light); font-weight: 600; }
+.term-success { color: var(--accent-emerald); }
+.term-cyan { color: var(--accent-cyan); }
+.term-warn { color: var(--sev-high); }
+.term-crit { color: var(--sev-critical); font-weight: 600; }
+.term-muted { color: var(--text-dim); }
+
+/* Section Basics */
+section {
+  padding: 110px 0; border-top: 1px solid var(--line); position: relative;
+}
+.sec-header { margin-bottom: 48px; }
+.sec-tag {
+  font-family: var(--mono); font-size: 12px; font-weight: 600;
+  color: var(--accent-cyan); letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 12px; display: inline-flex; align-items: center; gap: 8px;
+}
+.sec-tag::before {
+  content: '//'; color: var(--accent-light);
+}
+.sec-title {
+  font-size: clamp(28px, 3.8vw, 42px); font-weight: 700;
+  letter-spacing: -0.8px; color: var(--text);
+}
+.sec-title span { color: var(--accent-cyan); }
+.sec-desc {
+  color: var(--text-muted); font-size: 16px; max-width: 650px; margin-top: 10px;
+}
+
+/* About Grid */
+.about-grid {
+  display: grid; grid-template-columns: 1.35fr 1fr; gap: 48px; align-items: start;
+}
+.about-text p {
+  color: var(--text-muted); font-size: 16px; margin-bottom: 20px; line-height: 1.75;
+}
+.about-text strong { color: var(--text); }
+.appsec-quote {
+  padding: 16px 20px; border-left: 3px solid var(--accent);
+  background: rgba(99, 102, 241, 0.05); border-radius: 0 8px 8px 0;
+  font-size: 14.5px; color: #e2e8f0; margin-bottom: 24px;
+}
+.facts-card {
+  background: var(--surface); border: 1px solid var(--surface-border);
+  border-radius: 12px; padding: 26px 28px;
+}
+.fact-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 14px;
+}
+.fact-row:first-child { padding-top: 0; }
+.fact-row:last-child { border-bottom: none; padding-bottom: 0; }
+.fact-label {
+  font-family: var(--mono); font-size: 11.5px; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.fact-val { font-weight: 600; color: var(--text); text-align: right; }
+.fact-val.accent { color: var(--accent-cyan); font-family: var(--mono); }
+
+/* Focus Pillars */
+.pillars-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+}
+.pillar-card {
+  background: var(--surface); border: 1px solid var(--surface-border);
+  border-radius: 12px; padding: 32px 28px; transition: all 0.25s ease;
+  position: relative; overflow: hidden;
+}
+.pillar-card:hover {
+  transform: translateY(-4px); border-color: var(--surface-border-hover);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+.pillar-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-cyan));
+  opacity: 0; transition: opacity 0.25s;
+}
+.pillar-card:hover::before { opacity: 1; }
+.pillar-num {
+  font-family: var(--mono); font-size: 12px; color: var(--accent-cyan);
+  font-weight: 700; margin-bottom: 16px;
+}
+.pillar-card h3 {
+  font-size: 20px; font-weight: 700; margin-bottom: 12px; color: var(--text);
+}
+.pillar-card p {
+  color: var(--text-muted); font-size: 14.5px; line-height: 1.65;
+}
+
+/* Projects — Enterprise AppSec Cards */
+.projects-container { display: flex; flex-direction: column; gap: 36px; }
+
+.project-card {
+  background: var(--surface); border: 1px solid var(--surface-border);
+  border-radius: 14px; padding: 40px; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: grid; grid-template-columns: 1fr 1.35fr; gap: 48px;
+  position: relative;
+}
+.project-card:hover {
+  border-color: var(--surface-border-hover);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+}
+.project-card.featured {
+  background: linear-gradient(180deg, #10192e 0%, #0c1322 100%);
+  border-color: rgba(99, 102, 241, 0.32);
+}
+.project-badge-row {
+  display: flex; gap: 8px; align-items: center; margin-bottom: 14px; flex-wrap: wrap;
+}
+.badge-flagship {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  background: rgba(99, 102, 241, 0.18); color: var(--accent-light);
+  border: 1px solid rgba(99, 102, 241, 0.4); padding: 3px 9px; border-radius: 4px;
+}
+.badge-research {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  background: rgba(56, 189, 248, 0.12); color: var(--accent-cyan);
+  border: 1px solid rgba(56, 189, 248, 0.3); padding: 3px 9px; border-radius: 4px;
+}
+.badge-progress {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  background: rgba(234, 179, 8, 0.12); color: var(--sev-med);
+  border: 1px solid rgba(234, 179, 8, 0.35); padding: 3px 9px; border-radius: 4px;
+}
+.project-title {
+  font-size: 26px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 12px;
+}
+.project-meta {
+  font-family: var(--mono); font-size: 12px; color: var(--accent-cyan); margin-bottom: 18px;
+}
+.project-desc {
+  color: var(--text-muted); font-size: 15px; line-height: 1.7; margin-bottom: 22px;
+}
+.project-features {
+  list-style: none; margin-bottom: 24px;
+}
+.project-features li {
+  position: relative; padding-left: 20px; margin-bottom: 10px;
+  font-size: 14px; color: #cbd5e1;
+}
+.project-features li::before {
+  content: '▹'; position: absolute; left: 0; color: var(--accent-cyan);
+  font-family: var(--mono); font-weight: bold;
+}
+.tech-pill-row {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px;
+}
+.tech-pill {
+  font-family: var(--mono); font-size: 11px; padding: 4px 10px;
+  background: rgba(22, 32, 54, 0.8); border: 1px solid var(--line);
+  border-radius: 4px; color: var(--text-muted);
+}
+.project-action-links {
+  display: flex; gap: 14px; align-items: center; margin-top: auto;
+}
+.link-btn {
+  font-family: var(--mono); font-size: 12px; font-weight: 600;
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--accent-light); transition: all 0.2s;
+}
+.link-btn:hover { color: var(--accent-cyan); }
+.link-btn svg { width: 14px; height: 14px; fill: currentColor; }
+
+/* Visual Architecture / Code box on right */
+.project-visual {
+  background: #090e18; border: 1px solid var(--line);
+  border-radius: 10px; padding: 22px; display: flex; flex-direction: column;
+  justify-content: center; font-family: var(--mono); font-size: 12px;
+}
+.code-header {
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 14px;
+  color: var(--text-dim); font-size: 11px;
+}
+.code-content {
+  line-height: 1.65; color: #94a3b8;
+}
+.code-highlight { color: var(--accent-cyan); }
+.code-alert { color: var(--sev-high); }
+
+/* PortSwigger Academy Lab Writeups Section */
+.labs-summary-card {
+  background: var(--surface); border: 1px solid var(--surface-border);
+  border-radius: 14px; padding: 36px; margin-bottom: 32px;
+}
+.labs-top-row {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 24px; margin-bottom: 28px;
+}
+.labs-stat-box { display: flex; gap: 32px; flex-wrap: wrap; }
+.lab-stat b {
+  font-family: var(--mono); font-size: 32px; font-weight: 700;
+  color: var(--accent-cyan); display: block; line-height: 1;
+}
+.lab-stat span {
+  font-family: var(--mono); font-size: 11px; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+.lab-topics-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+}
+.lab-topic-item {
+  background: #0c1322; border: 1px solid var(--line); border-radius: 8px;
+  padding: 16px 18px; transition: all 0.2s;
+}
+.lab-topic-item:hover {
+  border-color: var(--surface-border-hover); transform: translateY(-2px);
+}
+.topic-name { font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--text); }
+.topic-count {
+  font-family: var(--mono); font-size: 11.5px; color: var(--accent-light);
+}
+
+/* Toolkit / Skill Matrix */
+.skills-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+}
+.skill-category {
+  background: var(--surface); border: 1px solid var(--surface-border);
+  border-radius: 12px; padding: 32px 28px;
+}
+.skill-category h4 {
+  font-family: var(--mono); font-size: 12px; text-transform: uppercase;
+  color: var(--accent-cyan); letter-spacing: 1px; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 8px;
+}
+.skill-category h4::before {
+  content: '■'; font-size: 10px; color: var(--accent-light);
+}
+.skill-list { list-style: none; }
+.skill-list li {
+  font-size: 14.5px; color: #cbd5e1; padding: 10px 0;
+  border-bottom: 1px solid var(--line); display: flex; justify-content: space-between;
+}
+.skill-list li:last-child { border-bottom: none; }
+.skill-list li span.level {
+  font-family: var(--mono); font-size: 11px; color: var(--text-dim);
+}
+
+/* Certifications */
+.certs-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;
+}
+.cert-card {
+  background: var(--surface); border: 1px solid var(--surface-border);
+  border-radius: 12px; padding: 28px 30px; display: flex; justify-content: space-between;
+  align-items: center; gap: 16px;
+}
+.cert-info h4 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.cert-info .issuer {
+  font-family: var(--mono); font-size: 12px; color: var(--text-dim);
+}
+.cert-badge-active {
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  padding: 4px 10px; border-radius: 4px;
+  background: rgba(16, 185, 129, 0.12); color: var(--accent-emerald);
+  border: 1px solid rgba(16, 185, 129, 0.3); text-transform: uppercase;
+}
+.cert-badge-progress {
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  padding: 4px 10px; border-radius: 4px;
+  background: rgba(99, 102, 241, 0.12); color: var(--accent-light);
+  border: 1px solid rgba(99, 102, 241, 0.35); text-transform: uppercase;
+}
+
+/* Contact / Footer */
+footer {
+  padding: 120px 0 60px; border-top: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--bg) 0%, #060910 100%);
+}
+.footer-cta {
+  background: var(--surface); border: 1px solid var(--surface-border);
+  border-radius: 16px; padding: 56px 48px; text-align: center;
+  margin-bottom: 70px; position: relative; overflow: hidden;
+}
+.footer-cta::before {
+  content:''; position: absolute; top:0; left: 10%; right: 10%; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), var(--accent-cyan), transparent);
+}
+.footer-cta h2 {
+  font-size: clamp(30px, 4vw, 44px); font-weight: 800; letter-spacing: -1px;
+  margin-bottom: 16px;
+}
+.footer-cta p {
+  color: var(--text-muted); font-size: 16.5px; max-width: 600px;
+  margin: 0 auto 36px;
+}
+.contact-links-grid {
+  display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;
+}
+.foot-meta {
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--mono); font-size: 12px; color: var(--text-dim);
+  padding-top: 30px; border-top: 1px solid var(--line); flex-wrap: wrap; gap: 14px;
+}
+
+/* Media Queries */
+@media (max-width: 960px) {
+  .project-card { grid-template-columns: 1fr; gap: 28px; }
+  .about-grid { grid-template-columns: 1fr; }
+  .pillars-grid { grid-template-columns: 1fr; }
+  .lab-topics-grid { grid-template-columns: repeat(2, 1fr); }
+  .skills-grid { grid-template-columns: 1fr; }
+  .certs-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .lab-topics-grid { grid-template-columns: 1fr; }
+  .footer-cta { padding: 36px 24px; }
+}
 </style>
 </head>
 <body>
 
-<div class="rail"><div class="rail-track"><div class="rail-fill" id="railFill"></div></div></div>
+<div class="scroll-rail"><div class="scroll-fill" id="scrollFill"></div></div>
 
-<nav>
+<nav id="navbar">
   <div class="wrap">
-    <div class="brand">Gouthaman<span style="color:var(--accent)">.</span></div>
+    <a href="#" class="brand">
+      <span>GOUTHAMAN.SEC</span>
+      <span class="brand-badge">APPSEC // API</span>
+    </a>
     <div class="navlinks">
       <a href="#about">About</a>
       <a href="#focus">Focus</a>
-      <a href="#work">Work</a>
-      <a href="#ctf">CTF</a>
+      <a href="#projects">Tooling &amp; Projects</a>
+      <a href="#research">Research &amp; Labs</a>
+      <a href="#skills">Arsenal</a>
+      <a href="#certs">Certifications</a>
       <a href="#contact">Contact</a>
     </div>
+    <a href="./pure_cyber.pdf" class="nav-resume-btn" target="_blank" rel="noopener">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+      Resume (PDF)
+    </a>
   </div>
 </nav>
 
+<!-- HERO SECTION -->
 <header class="hero wrap">
-  <h1>
-    <span class="line"><span class="word accent" style="animation-delay:.31s">Web Application</span>
-    <span class="line"><span class="word" style="animation-delay:.05s">Security</span></span>
-    <span class="line"><span class="word" style="animation-delay:.18s">researcher.</span></span>
-    
-  </h1>
-  <p class="hero-sub">Gouthaman G — final-year B.Tech Cybersecurity student building toward a career in VAPT and application security, one CTF flag and one custom-built scanner at a time.</p>
-  <div class="hero-tags">
-    <span>VAPT</span><span>PJPT (in progress)</span><span>API Security</span><span>CTF — Team Hunter</span>
+   <h1>
+      <span class="gradient-text">Application Security Engineer</span> focused on <span class="accent-indigo">Modern APIs &amp; Access Control.</span>
+    </h1>
+
+  <p class="hero-lead">
+    <strong>Gouthaman G</strong> — Final-year B.Tech Cyber Security engineer specializing in 
+    <strong>Application Security (AppSec)</strong>, <strong>API Vulnerability Assessment</strong> (BOLA/IDOR, Mass Assignment, GraphQL AST), 
+    and building automated DevSecOps testing engines validated against vulnerable targets.
+  </p>
+
+  <div class="hero-meta-badges">
+    <span class="meta-badge cert">🛡️ CASA Certified (APIsec Univ)</span>
+    <span class="meta-badge cert">🎯 PJPT Candidate (TCM Security)</span>
+    <span class="meta-badge labs">🧪 55+ PortSwigger Academy Labs</span>
+    <span class="meta-badge">⚡ OWASP API Top 10</span>
+    <span class="meta-badge">🔍 Multi-Tenant Differential Testing</span>
   </div>
+
   <div class="hero-cta">
-    <a class="btn primary" href="#work">See the work →</a>
-    <a class="btn ghost" href="https://drive.google.com/file/d/1Li3VpCBqpPwDqAu4Q321FtHXYhJd_rvG/view?usp=sharing" target="_blank" rel="noopener">Download resume</a>
+    <a href="#projects" class="btn btn-primary">
+      <span>Explore Security Tooling</span>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+    </a>
+    <a href="./pure_cyber.pdf" class="btn btn-secondary" target="_blank" rel="noopener">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+      <span>Download Resume (PDF)</span>
+    </a>
+    <a href="https://github.com/Gouthaman2465" class="btn btn-outline-cyan" target="_blank" rel="noopener">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+      <span>GitHub Profile</span>
+    </a>
+  </div>
+
+  <!-- Interactive Live Security Console -->
+  <div class="terminal-window">
+    <div class="terminal-header">
+      <div class="terminal-dots">
+        <span class="dot-red"></span>
+        <span class="dot-yellow"></span>
+        <span class="dot-green"></span>
+      </div>
+      <div class="terminal-title">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+        aegis-security-engine --mode=active-differential
+      </div>
+      <div class="terminal-tabs">
+        <button class="term-tab active" onclick="switchTerm('differential')">Tri-Request BOLA</button>
+        <button class="term-tab" onclick="switchTerm('graphql')">GraphQL AST Gateway</button>
+        <button class="term-tab" onclick="switchTerm('jwt')">JWT Security Suite</button>
+        <button class="term-tab" onclick="switchTerm('helm')">Helm AI Copilot (Planning)</button>
+      </div>
+    </div>
+    <div class="terminal-body" id="termOutput">
+      <div><span class="term-prompt">$ aegis-scanner</span> --target https://api.production-target.internal/v2 --protocol=REST,GraphQL</div>
+      <div><span class="term-cyan">[*]</span> Loading OpenAPI 3.0 specification &amp; GraphQL Schema introspection...</div>
+      <div><span class="term-cyan">[*]</span> Initialized Multi-Tenant Context: User_A (Tenant: Alpha) | User_B (Tenant: Beta)</div>
+      <div><span class="term-prompt">[1/3]</span> Executing Action-Level State Differential Replay on <span class="code-highlight">/api/v2/orders/{order_id}</span></div>
+      <div><span class="term-warn">[!] BOLA / IDOR DETECTED:</span> User_B successfully fetched Order #84920 belonging to User_A (HTTP 200)</div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;↳ State Verification: GET-PUT-GET payload confirmed mutation of unowned resource</div>
+      <div><span class="term-crit">[CRITICAL]</span> OWASP API1:2023 Broken Object Level Authorization confirmed. [CVSS v3.1: 8.6]</div>
+      <div><span class="term-success">[✓]</span> Generating evidence payload &amp; tripping GitHub Actions DevSecOps security gate...</div>
+    </div>
   </div>
 </header>
 
+<!-- ABOUT SECTION -->
 <section id="about">
-  <div class="wrap reveal">
-    <div class="sec-tag">About</div>
+  <div class="wrap">
+    <div class="sec-tag">Profile Overview</div>
     <div class="about-grid">
-      <div>
-        <p>I'm a <strong>final-year B.Tech Cybersecurity student</strong> at Amrita Vishwa Vidyapeetham, Coimbatore, graduating in 2027. My core focus is <strong>Vulnerability Assessment &amp; Penetration Testing (VAPT)</strong> — I'm currently working toward the <strong>Practical Junior Penetration Tester (PJPT)</strong> certification and building my offensive security fundamentals through structured lab work on PortSwigger's Web Security Academy.</p>
-        <p><strong>API security is one of the domains I specialize in</strong> within that broader VAPT practice — it's where a lot of my project work lives, because API attack surfaces (BOLA, broken auth, GraphQL misconfigurations) reward exactly the kind of tool-building I enjoy. But my interests extend across web app pentesting, network security, and competitive security research through CTFs.</p>
-        <p>I learn best by building — if I want to understand a vulnerability class properly, I write a scanner that finds it, then test it against deliberately vulnerable labs until it holds up.</p>
+      <div class="about-text">
+        <h2 class="sec-title" style="margin-bottom: 20px;">Securing modern applications by <span>understanding the mechanics of access control.</span></h2>
+        
+        <div class="appsec-quote">
+          "Traditional DAST scanners analyze requests in isolation without tenant context, consistently missing broken authorization. True application security requires understanding multi-tenant state, role boundaries, and schema-level zero trust."
+        </div>
+
+        <p>
+          I am a <strong>final-year B.Tech Cyber Security student</strong> at Amrita Vishwa Vidyapeetham, Coimbatore (graduating in 2027 with a 7.5 CGPA). My primary engineering focus is on <strong>Vulnerability Assessment &amp; Penetration Testing (VAPT)</strong>, specifically targeting the <strong>OWASP Top 10</strong> and <strong>OWASP API Security Top 10</strong>.
+        </p>
+        <p>
+          Rather than just running commercial blackbox scanners, I specialize in <strong>building custom security tooling</strong>: automated scanners that perform multi-role differential replays (detecting Horizontal IDOR, Vertical Privilege Escalation, and Mass Assignment), and schema-aware zero-trust proxies that inspect and validate AST queries before they reach backend microservices.
+        </p>
+        <p>
+          My practical foundation is reinforced by <strong>55+ documented PortSwigger Web Security Academy labs</strong>, active bug bounty recon on <strong>Intigriti</strong>, holding the <strong>Certified API Security Analyst (CASA)</strong> credential from APIsec University, and actively pursuing the <strong>Practical Junior Penetration Tester (PJPT)</strong> by TCM Security.
+        </p>
       </div>
-      <div class="fact-list">
-        <div class="fact"><span class="k">Year</span><span class="v">Final year (2027)</span></div>
-        <div class="fact"><span class="k">Institution</span><span class="v">Amrita Vishwa Vidyapeetham</span></div>
-        <div class="fact"><span class="k">Primary focus</span><span class="v">VAPT</span></div>
-        <div class="fact"><span class="k">In progress</span><span class="v">PJPT — TCM Security</span></div>
-        <div class="fact"><span class="k">Specialization</span><span class="v">API Security</span></div>
-        <div class="fact"><span class="k">Team</span><span class="v">Team Hunter (CTF)</span></div>
+
+      <div class="facts-card">
+        <div class="fact-row">
+          <span class="fact-label">Academic Degree</span>
+          <span class="fact-val">B.Tech Cyber Security (2027)</span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-label">University</span>
+          <span class="fact-val">Amrita Vishwa Vidyapeetham</span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-label">Core Domain</span>
+          <span class="fact-val accent">AppSec &amp; API Security</span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-label">Certification</span>
+          <span class="fact-val">CASA (APIsec University)</span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-label">In Progress</span>
+          <span class="fact-val accent">PJPT (TCM Security)</span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-label">Lab Research</span>
+          <span class="fact-val">55+ PortSwigger Academy Labs</span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-label">Bug Bounty</span>
+          <span class="fact-val">Intigriti (API / IDOR Focus)</span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-label">Dev Stack</span>
+          <span class="fact-val">Python, TypeScript, FastAPI, React</span>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
+<!-- CORE FOCUS PILLARS -->
 <section id="focus">
-  <div class="wrap reveal">
-    <div class="sec-tag">Focus</div>
-    <h2 class="sec-title">Three practices, <em>one instinct</em>: break it to understand it.</h2>
-    <div class="pillars reveal-stagger">
-      <div class="pillar">
-        <div class="num">01</div>
-        <h3>VAPT</h3>
-        <p>Structured, methodology-driven assessment of web applications and networks — working toward PJPT while practicing on PortSwigger's Web Security Academy and lab environments like crAPI and DVGA.</p>
+  <div class="wrap">
+    <div class="sec-header">
+      <div class="sec-tag">Engineering Focus</div>
+      <h2 class="sec-title">Three pillars of <span>offensive &amp; defensive AppSec</span></h2>
+      <p class="sec-desc">A methodology grounded in building verifiable tools to uncover flaws that static review and simple fuzzers miss.</p>
+    </div>
+
+    <div class="pillars-grid">
+      <div class="pillar-card">
+        <div class="pillar-num">01 // PROTOCOL-AWARE VAPT</div>
+        <h3>Multi-Protocol API Security</h3>
+        <p>
+          Specialized assessment across REST, GraphQL, and SOAP architectures. Implementing automated protocol discovery, Swagger/WSDL contract enumeration, and AST depth exhaustion checks against OWASP API Top 10 flaws.
+        </p>
       </div>
-      <div class="pillar">
-        <div class="num">02</div>
-        <h3>API Security</h3>
-        <p>My specialization within VAPT. Deep, hands-on work with the OWASP API Top 10 — BOLA, mass assignment, broken auth, GraphQL misconfigurations — expressed through Aegis-API and a schema-aware zero-trust gateway.</p>
+
+      <div class="pillar-card">
+        <div class="pillar-num">02 // ACCESS CONTROL MECHANICS</div>
+        <h3>Broken Access Control (BAC)</h3>
+        <p>
+          Automating cross-role session recording with headless Chromium (Playwright) and executing differential replays across multiple authentic user contexts to uncover horizontal IDOR, vertical privilege escalation, and mass assignment.
+        </p>
       </div>
-      <div class="pillar">
-        <div class="num">03</div>
-        <h3>Competitive Security</h3>
-        <p>Sharpening the same instincts under time pressure with Team Hunter — crypto, pwn, web, and reversing across 60+ CTF events, ranked 68th globally and 7th in India in 2026.</p>
+
+      <div class="pillar-card">
+        <div class="pillar-num">03 // SHIFT-LEFT &amp; ZERO-TRUST</div>
+        <h3>Schema Gateways &amp; CI/CD Gates</h3>
+        <p>
+          Constructing schema-aware zero-trust proxies that inspect object ID arguments and normalize AST queries before backend execution, integrated with GitHub Actions to block vulnerable commits before production deployment.
+        </p>
       </div>
     </div>
   </div>
 </section>
 
-<section id="work">
-  <div class="wrap reveal">
-    <div class="sec-tag">Selected work</div>
-    <h2 class="sec-title">Projects, built to <em>find what review misses</em>.</h2>
-
-    <div class="case">
-      <div class="case-left">
-        <div class="case-tag">Flagship project</div>
-        <h3>Aegis-API</h3>
-        <div class="case-meta">Python · REST / SOAP / GraphQL · 17+ build phases</div>
-      </div>
-      <div class="case-right">
-        <p>A multi-protocol API penetration testing framework I built to properly understand the OWASP API Security Top 10 — not just read about it. It scans REST, SOAP, and GraphQL services end to end: discovering endpoints via Swagger/OpenAPI and WSDL enumeration, mapping GraphQL schemas through introspection, then actively probing for the vulnerability classes that matter most in modern APIs.</p>
-        <div class="case-stack">
-          <span>Python</span><span>Requests</span><span>LXML</span><span>FPDF2</span><span>Docker</span><span>GitHub Actions</span>
-        </div>
-        <ul class="case-list">
-          <li>Automated detection for BOLA, broken authentication, mass assignment, and rate-limiting flaws</li>
-          <li>Dynamic CVSS v3.1 scoring with evidence collection and auto-generated VAPT reports</li>
-          <li>Tested against intentionally vulnerable labs — crAPI, DVGA — to validate real detection accuracy</li>
-          <li>CI/CD security testing pipeline via GitHub Actions for continuous assessment</li>
-        </ul>
-      </div>
+<!-- SELECTED WORK & REPOSITORIES -->
+<section id="projects">
+  <div class="wrap">
+    <div class="sec-header">
+      <div class="sec-tag">Engineered Tooling &amp; Repositories</div>
+      <h2 class="sec-title">Security systems built to <span>find, prove, &amp; remediate.</span></h2>
+      <p class="sec-desc">Public tools, testing frameworks, and zero-trust prototypes developed and validated against realistic vulnerable targets.</p>
     </div>
 
-    <div class="case">
-      <div class="case-left">
-        <div class="case-tag">Final year project</div>
-        <h3>Zero-Trust Gateway for GraphQL</h3>
-        <div class="case-meta">Schema validation · Authorization enforcement</div>
-      </div>
-      <div class="case-right">
-        <p>An in-progress security gateway that stops one of the most common real-world GraphQL failures: Broken Object Level Authorization. Instead of trusting a resolver to check permissions correctly, the gateway enforces authorization at the schema level under a zero-trust model — every field access is validated against the requester's actual permissions, regardless of what the query looks like.</p>
-        <div class="case-stack">
-          <span>GraphQL Security</span><span>Zero-Trust Architecture</span><span>Schema Validation</span><span>BOLA Prevention</span>
+    <div class="projects-container">
+
+      <!-- PROJECT 1: AEGIS-API -->
+      <div class="project-card featured">
+        <div>
+          <div class="project-badge-row">
+            <span class="badge-flagship">Flagship Tooling</span>
+            <span class="badge-research">OWASP API Top 10</span>
+          </div>
+          <h3 class="project-title">Aegis-API: Multi-Protocol API Security Testing Framework</h3>
+          <div class="project-meta">Python 3.9+ · REST / SOAP / GraphQL · Docker · GitHub Actions</div>
+          <p class="project-desc">
+            A comprehensive, automated API penetration testing framework engineered to validate REST, GraphQL, and SOAP microservices end-to-end. Features automated protocol routing, OpenAPI/Swagger contract parsing, and active vulnerability probing against intentionally vulnerable enterprise labs (crAPI, DVGA).
+          </p>
+          <ul class="project-features">
+            <li><strong>Two-User Tri-Request Engine:</strong> Implements state-differential analysis across CRUD operations, sub-resources, and parameter manipulation to detect Action-Level BOLA &amp; IDOR with zero guesswork.</li>
+            <li><strong>State Verification Engine:</strong> GET-PUT-GET state verification confirming real mass assignment bugs on production-like endpoints.</li>
+            <li><strong>JWT &amp; Rate-Limit Probing:</strong> Automated verification of <code>alg:none</code>, algorithm confusion, weak secret bruteforcing, <code>kid</code> header injection, and burst/throttle threshold bypasses.</li>
+            <li><strong>GraphQL &amp; SOAP Probing:</strong> AST query-depth exhaustion, field-level auth bypass, batching credential stuffing, in-band XXE file disclosure, and XML injection.</li>
+            <li><strong>CI/CD DevSecOps Gate:</strong> Automated FIRST CVSS v3.1 dynamic scoring, auto-generated PDF/CSV reports, and GitHub Actions pass/fail thresholds.</li>
+          </ul>
+          <div class="tech-pill-row">
+            <span class="tech-pill">Python</span>
+            <span class="tech-pill">GraphQL AST</span>
+            <span class="tech-pill">LXML / SOAP</span>
+            <span class="tech-pill">CVSS v3.1</span>
+            <span class="tech-pill">Docker</span>
+            <span class="tech-pill">GitHub Actions</span>
+          </div>
+          <div class="project-action-links">
+            <a href="https://github.com/Gouthaman2465/Unified-API-Scanner" class="link-btn" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+              View Repository on GitHub →
+            </a>
+          </div>
+        </div>
+
+        <div class="project-visual">
+          <div class="code-header">
+            <span>aegis_bola_engine.py</span>
+            <span class="code-highlight">TRI-REQUEST PROTOCOL</span>
+          </div>
+          <div class="code-content">
+<span class="term-dim"># Step 1: User_A creates resource</span>
+res_a = user_a.post('/api/orders', data={'item': 'id_42'})
+target_id = res_a.json()['id']
+
+<span class="term-dim"># Step 2: User_B attempts direct cross-tenant GET</span>
+probe = user_b.get(f'/api/orders/{target_id}')
+
+<span class="term-dim"># Step 3: State-differential similarity analysis</span>
+<span class="code-highlight">if</span> probe.status_code == 200:
+    sim_ratio = compare_bodies(res_a.body, probe.body)
+    <span class="code-highlight">if</span> sim_ratio &gt; 0.92:
+        <span class="code-alert">raise BOLAIncident(</span>
+            severity='HIGH',
+            cvss_score=8.6,
+            evidence=probe.text
+        <span class="code-alert">)</span>
+          </div>
         </div>
       </div>
+
+      <!-- PROJECT 2: AEGIS-WEB (PUBLIC OPEN-SOURCE PROJECT) -->
+      <div class="project-card featured">
+        <div>
+          <div class="project-badge-row">
+            <span class="badge-flagship" style="background:rgba(16,185,129,0.18); color:var(--accent-emerald); border-color:rgba(16,185,129,0.4);">Public Project</span>
+            <span class="badge-flagship">Enterprise Web AppSec</span>
+            <span class="badge-research">OWASP A01:2021 Specialist</span>
+          </div>
+          <h3 class="project-title">Aegis-Web: Multi-Role Access-Control Testing Platform</h3>
+          <div class="project-meta">FastAPI · PostgreSQL 16 · React 19 SPA · TypeScript 5.x · Playwright Chromium · Async Worker Queue</div>
+          <p class="project-desc">
+            A public, enterprise-grade automated security assessment platform engineered specifically to detect and verify <strong>OWASP A01:2021 (Broken Access Control)</strong> in modern web applications and APIs. Conventional DAST scanners routinely miss access control flaws because they evaluate requests in isolation without tenant or privilege context. Aegis-Web solves this by recording genuine authenticated user sessions using Playwright Chromium across distinct roles, normalizing dynamic responses, and executing automated cross-role differential replays with mathematically grounded similarity scoring and strict false-positive suppression.
+          </p>
+          <ul class="project-features">
+            <li><strong>Headless Playwright Chromium Crawler:</strong> Authenticates across multi-tier accounts (Admin, Auditor, Standard User) and records authentic DOM routes and state-mutating API calls.</li>
+            <li><strong>Cross-Role Differential Replay Engine:</strong> Executes automated cross-role replays across privilege boundaries to flag Horizontal IDOR, Vertical Privilege Escalation, and Unauthenticated Access with normalized response body comparisons.</li>
+            <li><strong>Queue Architecture:</strong> High-performance FastAPI backend enqueues jobs to PostgreSQL 16 using <code>FOR UPDATE SKIP LOCKED</code> with an async background worker runner.</li>
+            <li><strong>React 19 DiffViewer Dashboard:</strong> Full single-page application presenting visual diffs, Levenshtein &amp; sequence similarity scoring, and false-positive suppression controls.</li>
+          </ul>
+          <div class="tech-pill-row">
+            <span class="tech-pill">TypeScript 5.x</span>
+            <span class="tech-pill">React 19</span>
+            <span class="tech-pill">FastAPI</span>
+            <span class="tech-pill">PostgreSQL 16</span>
+            <span class="tech-pill">Playwright</span>
+            <span class="tech-pill">httpx</span>
+            <span class="tech-pill">Docker</span>
+          </div>
+          <div class="project-action-links">
+            <a href="https://github.com/Gouthaman2465/Aegis-Web-Multi-Role-Access-Control-Testing-Platform" class="link-btn" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+              View Public Repository on GitHub →
+            </a>
+          </div>
+        </div>
+
+        <div class="project-visual">
+          <div class="code-header">
+            <span>aegis-web/worker/differential.py</span>
+            <span class="code-highlight">CROSS-ROLE REPLAY</span>
+          </div>
+          <div class="code-content">
+<span class="term-dim"># Worker claims next queued scan job safely</span>
+SELECT * FROM scans 
+WHERE status = 'queued' 
+FOR UPDATE SKIP LOCKED LIMIT 1;
+
+<span class="term-dim"># Replay low-priv user request with Admin session</span>
+resp_admin = await client.request(
+    method=orig_req.method,
+    url=orig_req.url,
+    headers=auth_headers_admin
+)
+
+<span class="code-highlight">if</span> resp_admin.status_code == 200:
+    <span class="code-alert">raise VerticalPrivilegeEscalation(</span>
+        endpoint=orig_req.url,
+        severity='CRITICAL',
+        diff=diff_bodies(orig_resp, resp_admin)
+    <span class="code-alert">)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROJECT 3: HELM (PLANNING STAGE / ARCHITECTURAL ROADMAP) -->
+      <div class="project-card">
+        <div>
+          <div class="project-badge-row">
+            <span class="badge-progress" style="background:rgba(234, 179, 8, 0.15); color:var(--sev-med); border-color:rgba(234, 179, 8, 0.4);">Planning Stage</span>
+            <span class="badge-research">6-Phase Architectural Roadmap</span>
+            <span class="badge-flagship">Zero-Cost Free AI Stack</span>
+          </div>
+          <h3 class="project-title">Helm: Autonomous AI Cyber Copilot &amp; Career Orchestrator</h3>
+          <div class="project-meta">Python 3.11 · Google Gemini (Free Tier) · Groq API · Playwright · Streamlit · Telegram Bot</div>
+          <p class="project-desc">
+            An autonomous personal operating system and career copilot architected specifically for cyber security professionals. Designed to operate completely on <strong>free-tier AI</strong> (Google Gemini Free API with Groq as high-speed fallback) while maintaining <strong>strict compliance with platform rules</strong> through human-in-the-loop safeguards (automating the 90% prefill burden while safely pausing before the final Submit click).
+          </p>
+          <ul class="project-features">
+            <li><strong>v1 — Core &amp; Cyber Job Engine:</strong> Gmail alert parsers across LinkedIn, Naukri, Internshala, Instahyre, and Wellfound; strict cyber-role filtering; semantic scoring (0–10) against user credentials via Gemini Free API; Streamlit dashboard &amp; Telegram morning digest with 7-day follow-up reminders.</li>
+            <li><strong>v2 — Multi-Source ATS &amp; TOS-Compliant Prefill:</strong> Ingestion of Greenhouse, Lever, and Ashby feeds; automated resume tailoring and cover notes (zero hallucinated skills); Playwright browser prefill that populates form fields but safely pauses before Submit to protect platform account standing.</li>
+            <li><strong>v3 — Network Outreach &amp; Interview Intel:</strong> Curated directory of recruiters, security engineers, and alumni with AI message drafting (sent manually), reply tracking, and automated company threat briefs before interviews.</li>
+            <li><strong>v4 — Security Knowledge &amp; Lab Pipeline:</strong> Converts Obsidian markdown vaults into spaced-repetition flashcards, delivers automated daily CVE/advisory digests, and tracks CTF and PortSwigger lab write-ups.</li>
+            <li><strong>v5 &amp; v6 — Operations, Verification &amp; Backups:</strong> Integrates trading journal rule-break checks, conducts automated Git secret leakage audits, and provisions nightly encrypted backups of study vaults.</li>
+          </ul>
+          <div class="tech-pill-row">
+            <span class="tech-pill">Python 3.11</span>
+            <span class="tech-pill">Gemini Free API</span>
+            <span class="tech-pill">Groq API</span>
+            <span class="tech-pill">Playwright</span>
+            <span class="tech-pill">Streamlit</span>
+            <span class="tech-pill">Telegram API</span>
+            <span class="tech-pill">Gmail API</span>
+            <span class="tech-pill">SQLite</span>
+          </div>
+          <div class="project-action-links">
+            <span class="meta-badge" style="margin:0; border-color:rgba(234, 179, 8, 0.4); color:var(--sev-med); background:rgba(234, 179, 8, 0.08);">
+              ⚡ In Planning Stage · 6-Week Iterative Rollout
+            </span>
+          </div>
+        </div>
+
+        <div class="project-visual">
+          <div class="code-header">
+            <span>helm/core/job_engine.py</span>
+            <span class="code-highlight">TOS-COMPLIANT AI FLOW</span>
+          </div>
+          <div class="code-content">
+<span class="term-dim"># v1: Gemini Free API Semantic Scorer</span>
+score, reason = await gemini.score_role(
+    candidate_profile=load_profile('pure_cyber.json'),
+    job_description=alert.text,
+    filter_cyber_only=True
+)
+
+<span class="term-dim"># v2: Playwright Prefill with Human-in-the-Loop</span>
+<span class="code-highlight">if</span> score &gt;= 7.5:
+    await form_filler.prefill_inputs(page, candidate_profile)
+    <span class="term-dim"># Strictly adhere to platform rules: Never auto-submit</span>
+    <span class="code-highlight">await</span> page.pause_for_human_review(
+        prompt=<span class="code-highlight">"Form prefilled. Check &amp; click Submit!"</span>
+    )
+          </div>
+        </div>
+      </div>
+
+      <!-- PROJECT 3: GRAPHQL ZERO-TRUST GATEWAY -->
+      <div class="project-card">
+        <div>
+          <div class="project-badge-row">
+            <span class="badge-research">Final Year Research</span>
+            <span class="badge-progress">Active Development</span>
+          </div>
+          <h3 class="project-title">Schema-Aware Zero-Trust Gateway for GraphQL BOLA</h3>
+          <div class="project-meta">GraphQL AST · Zero-Trust Architecture · Python · Ownership Enforcement</div>
+          <p class="project-desc">
+            An in-line security proxy that blocks Broken Object Level Authorization (BOLA) at the schema level before queries reach downstream resolvers. Eliminates reliance on individual developers remembering to implement authorization checks inside nested resolvers.
+          </p>
+          <ul class="project-features">
+            <li><strong>Schema Argument Inspection:</strong> Intercepts incoming operations, inspects object ID arguments, and enforces tenant ownership validation prior to execution.</li>
+            <li><strong>AST Canonicalization:</strong> Parses and normalizes incoming GraphQL abstract syntax trees, resolving aliases and inline fragments to foil obfuscated bypass attempts.</li>
+            <li><strong>Anti-Enumeration Rate Limiting:</strong> Enforces operation-cost and depth limits to neutralize batched queries attempting high-speed ID enumeration.</li>
+          </ul>
+          <div class="tech-pill-row">
+            <span class="tech-pill">GraphQL AST</span>
+            <span class="tech-pill">Zero Trust</span>
+            <span class="tech-pill">Reverse Proxy</span>
+            <span class="tech-pill">BOLA Prevention</span>
+            <span class="tech-pill">Rate Limiting</span>
+          </div>
+          <div class="project-action-links">
+            <span class="meta-badge" style="margin:0;">Final Year Project (Amrita Vishwa Vidyapeetham)</span>
+          </div>
+        </div>
+
+        <div class="project-visual">
+          <div class="code-header">
+            <span>gateway/ast_validator.py</span>
+            <span class="code-highlight">AST NORMALIZATION</span>
+          </div>
+          <div class="code-content">
+<span class="term-dim"># Parse GraphQL AST to sanitize alias tricks</span>
+ast = parse(incoming_query)
+visitor = CanonicalizeVisitor()
+normalized_query = visit(ast, visitor)
+
+<span class="term-dim"># Validate ownership before resolver execution</span>
+<span class="code-highlight">for</span> node <span class="code-highlight">in</span> visitor.extracted_nodes:
+    <span class="code-highlight">if</span> <span class="code-highlight">not</span> verify_owner(user.id, node.object_id):
+        <span class="code-alert">return GraphQLError("Unauthorized Field Access")</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROJECT 4: SENTINELGUARD -->
+      <div class="project-card">
+        <div>
+          <div class="project-badge-row">
+            <span class="badge-research">Scan-as-a-Service</span>
+            <span class="badge-flagship">Full-Stack AppSec</span>
+          </div>
+          <h3 class="project-title">SentinelGuard / SentinelAPI: Full-Stack API Vulnerability Platform</h3>
+          <div class="project-meta">FastAPI · React + TypeScript · SQLAlchemy · Streamlit · SQLite</div>
+          <p class="project-desc">
+            A scan-as-a-service application built to detect OWASP API1 (BOLA/IDOR) and API3 (Mass Assignment) via state-verified testing. Features a dual-frontend architecture for both web clients and internal operator consoles.
+          </p>
+          <ul class="project-features">
+            <li><strong>Dual Frontend:</strong> Clean Vite-scaffolded React+TS interface alongside a direct Streamlit console for local analyst inspections.</li>
+            <li><strong>State Diffing Engine:</strong> Leverages SequenceMatcher similarity metrics to identify unauthorized object retrieval with high precision.</li>
+            <li><strong>Persistence:</strong> Normalizes findings, CVSS metrics, and request/response artifacts into a structured SQLite database via SQLAlchemy.</li>
+          </ul>
+          <div class="tech-pill-row">
+            <span class="tech-pill">FastAPI</span>
+            <span class="tech-pill">TypeScript</span>
+            <span class="tech-pill">React</span>
+            <span class="tech-pill">SQLAlchemy</span>
+            <span class="tech-pill">Streamlit</span>
+          </div>
+          <div class="project-action-links">
+            <a href="https://github.com/Gouthaman2465/SentinelGuard-Full-Stack-API-Vulnerability-Scanner" class="link-btn" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+              View Repository on GitHub →
+            </a>
+          </div>
+        </div>
+
+        <div class="project-visual">
+          <div class="code-header">
+            <span>sentinelapi/db.py</span>
+            <span class="code-highlight">FINDINGS MODEL</span>
+          </div>
+          <div class="code-content">
+<span class="code-highlight">class</span> <span class="term-cyan">Finding</span>(Base):
+    __tablename__ = "findings"
+    id = Column(Integer, primary_key=True)
+    scan_id = Column(Integer, ForeignKey("scans.id"))
+    vuln_type = Column(String(50))  <span class="term-dim"># BOLA / Mass Assignment</span>
+    endpoint = Column(String(255))
+    cvss_score = Column(Float)
+    evidence_dump = Column(JSON)
+          </div>
+        </div>
+      </div>
+
+      <!-- PROJECT 5: NETWORK IPS -->
+      <div class="project-card">
+        <div>
+          <div class="project-badge-row">
+            <span class="badge-research">Systems &amp; Network Defense</span>
+          </div>
+          <h3 class="project-title">Network Intrusion Prevention System (NIPS)</h3>
+          <div class="project-meta">Python · Scapy · Linux iptables · Packet Inspection</div>
+          <p class="project-desc">
+            A real-time network defense tool that inspects raw packets at the socket level and enforces blocking decisions dynamically through Linux <code>iptables</code>.
+          </p>
+          <ul class="project-features">
+            <li><strong>Packet Inspection:</strong> Real-time capture and decoding with Scapy to identify malicious transport &amp; application payloads.</li>
+            <li><strong>Signature Rules:</strong> Custom detection engine flagging ICMP/UDP/SYN floods, SQLi patterns, XSS tags, and path traversal strings.</li>
+            <li><strong>Dynamic Firewall Blocking:</strong> Automatically provisions dynamic <code>iptables DROP</code> rules against abusive IP addresses.</li>
+          </ul>
+          <div class="tech-pill-row">
+            <span class="tech-pill">Scapy</span>
+            <span class="tech-pill">iptables</span>
+            <span class="tech-pill">Python</span>
+            <span class="tech-pill">Network Analysis</span>
+          </div>
+          <div class="project-action-links">
+            <a href="https://github.com/Gouthaman2465/Network-intrusion-prevention-system" class="link-btn" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+              View Repository on GitHub →
+            </a>
+          </div>
+        </div>
+
+        <div class="project-visual">
+          <div class="code-header">
+            <span>nips/firewall_block.py</span>
+            <span class="code-highlight">IPTABLES MITIGATION</span>
+          </div>
+          <div class="code-content">
+<span class="term-dim"># Execute dynamic iptables drop</span>
+subprocess.run([
+    'iptables', '-A', 'INPUT',
+    '-s', attacker_ip,
+    '-j', 'DROP'
+], check=True)
+logger.warning(f"BLOCKED IP {attacker_ip} [SYN FLOOD / SQLi]")
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- RESEARCH & LAB WRITE-UPS -->
+<section id="research">
+  <div class="wrap">
+    <div class="sec-header">
+      <div class="sec-tag">Security Research &amp; Labs</div>
+      <h2 class="sec-title">PortSwigger Web Security Academy <span>Write-Ups</span></h2>
+      <p class="sec-desc">
+        Comprehensive repository documenting over 55 Apprentice &amp; Practitioner labs. Each write-up covers vulnerability root cause, manual exploitation in Burp Suite, Python weaponization, and developer remediation.
+      </p>
     </div>
 
-    <div class="case">
-      <div class="case-left">
-        <div class="case-tag">Network security</div>
-        <h3>Intrusion Prevention System</h3>
-        <div class="case-meta">Python · Scapy · iptables</div>
-      </div>
-      <div class="case-right">
-        <p>A network intrusion prevention system built to understand detection and response at the packet level. It inspects traffic in real time with Scapy and enforces blocking decisions dynamically through iptables, rather than relying on static, pre-defined rules alone.</p>
-        <div class="case-stack">
-          <span>Python</span><span>Scapy</span><span>iptables</span>
+    <div class="labs-summary-card">
+      <div class="labs-top-row">
+        <div>
+          <h3 style="font-size:22px; margin-bottom: 8px;">Documentation with Fixes</h3>
+          <p style="color:var(--text-muted); font-size:14.5px;">Because detection without understanding remediation is only half the job.</p>
         </div>
-        <ul class="case-list">
-          <li>10+ custom rules detecting ICMP/UDP/SYN floods, SQLi, XSS, and directory traversal</li>
-          <li>Automated suspicious-IP blocking with full event logging for post-incident analysis</li>
-        </ul>
+        <div class="labs-stat-box">
+          <div class="lab-stat">
+            <b>55+</b>
+            <span>Labs Completed</span>
+          </div>
+          <div class="lab-stat">
+            <b>9</b>
+            <span>Vulnerability Topics</span>
+          </div>
+          <div class="lab-stat">
+            <b>Burp Suite</b>
+            <span>Manual Verification</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lab-topics-grid">
+        <div class="lab-topic-item">
+          <div class="topic-name">Access Control</div>
+          <div class="topic-count">11 Labs Solved</div>
+          <p style="font-size:12.5px; color:var(--text-dim); margin-top:4px;">IDOR, Horizontal/Vertical escalation, multi-step flaws.</p>
+        </div>
+        <div class="lab-topic-item">
+          <div class="topic-name">API Testing</div>
+          <div class="topic-count">5 Labs Solved</div>
+          <p style="font-size:12.5px; color:var(--text-dim); margin-top:4px;">Endpoint discovery, mass assignment, server tampering.</p>
+        </div>
+        <div class="lab-topic-item">
+          <div class="topic-name">SQL Injection</div>
+          <div class="topic-count">10 Labs Solved</div>
+          <p style="font-size:12.5px; color:var(--text-dim); margin-top:4px;">UNION attacks, blind SQLi, time delays, error-based.</p>
+        </div>
+        <div class="lab-topic-item">
+          <div class="topic-name">Cross-Site Scripting (XSS)</div>
+          <div class="topic-count">10 Labs Solved</div>
+          <p style="font-size:12.5px; color:var(--text-dim); margin-top:4px;">Reflected, stored, DOM-based, CSP bypasses.</p>
+        </div>
+        <div class="lab-topic-item">
+          <div class="topic-name">JWT Attacks</div>
+          <div class="topic-count">5 Labs Solved</div>
+          <p style="font-size:12.5px; color:var(--text-dim); margin-top:4px;">alg:none, weak secret brute-force, header injection.</p>
+        </div>
+        <div class="lab-topic-item">
+          <div class="topic-name">Authentication</div>
+          <div class="topic-count">5 Labs Solved</div>
+          <p style="font-size:12.5px; color:var(--text-dim); margin-top:4px;">Brute-force bypass, 2FA bypass, reset poisoning.</p>
+        </div>
+        <div class="lab-topic-item">
+          <div class="topic-name">Path Traversal</div>
+          <div class="topic-count">6 Labs Solved</div>
+          <p style="font-size:12.5px; color:var(--text-dim); margin-top:4px;">Null-byte, absolute path, traversal sequence bypass.</p>
+        </div>
+        <div class="lab-topic-item">
+          <div class="topic-name">CSRF &amp; GraphQL</div>
+          <div class="topic-count">4+ Labs Solved</div>
+          <p style="font-size:12.5px; color:var(--text-dim); margin-top:4px;">Token validation bypass, schema introspection bypass.</p>
+        </div>
+      </div>
+
+      <div style="margin-top: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+        <span style="font-family: var(--mono); font-size: 12.5px; color: var(--text-muted);">
+          Also active on <strong style="color:var(--accent-cyan);">Intigriti Bug Bounty</strong> hunting public scopes for BOLA/IDOR &amp; API flaws.
+        </span>
+        <a href="https://github.com/Gouthaman2465/portswigger_lab_writeups" class="btn btn-secondary" target="_blank" rel="noopener">
+          <span>Read Lab Write-Ups on GitHub →</span>
+        </a>
       </div>
     </div>
   </div>
 </section>
 
-<section id="ctf">
-  <div class="wrap reveal">
-    <div class="sec-tag">Competitive security</div>
-    <h2 class="sec-title">Team <em>Hunter</em>.</h2>
-    <div class="ctf-intro">
-      <div>
-        <p>I compete with <strong>Team Hunter</strong>, an academic CTF team from Amrita Vishwa Vidyapeetham. We're driven by curiosity and a love for hard problems — crypto, pwn, web, and reversing — and we aim to learn something new with every flag we capture.</p>
-        <p>In 2026 the team placed <strong>68th globally</strong> and <strong>7th in India</strong> across 60+ competitive events, with several podium and top-5 finishes along the way.</p>
-      </div>
-      <div class="ctf-card">
-        <div class="team-name">Team Hunter</div>
-        <div class="team-sub">Te@/\/\ #unter · Academic Team, Amrita Vishwa Vidyapeetham</div>
-        <div class="ctf-stats">
-          <div class="stat"><b>68th</b><span>Global rank 2026</span></div>
-          <div class="stat"><b>7th</b><span>India rank</span></div>
-          <div class="stat"><b>60+</b><span>events entered</span></div>
-        </div>
-        <a class="recruit" href="https://docs.google.com/forms/d/e/1FAIpQLSdWl8T_9NpnCgC253aYGN1r6KY4U4rGGDVQpAYvtSZxSLlVaQ/viewform?usp=publish-editor" target="_blank" rel="noopener">We're actively recruiting →</a>
-      </div>
-    </div>
-
-    <div class="roster-label">Notable placements — 2026</div>
-    <div class="results-grid reveal-stagger">
-      <div class="result">
-        <div class="place">#1 <span>/ 1st</span></div>
-        <div class="event">SecLeaf Q2 CTF 2026</div>
-        <div class="pts">6,195 pts</div>
-      </div>
-      <div class="result">
-        <div class="place">#3 <span>/ 3rd</span></div>
-        <div class="event">Hackअस्त्र</div>
-        <div class="pts">7,844 pts</div>
-      </div>
-      <div class="result">
-        <div class="place">#3 <span>/ 3rd</span></div>
-        <div class="event">RAMunchers CTF</div>
-        <div class="pts">3,458 pts</div>
-      </div>
-      <div class="result">
-        <div class="place">#4 <span>/ 4th</span></div>
-        <div class="event">ZeroDay Heist 2026</div>
-        <div class="pts">9,673 pts</div>
-      </div>
-      <div class="result">
-        <div class="place">#4 <span>/ 4th</span></div>
-        <div class="event">bhackari CTF 2026</div>
-        <div class="pts">4,158 pts</div>
-      </div>
-      <div class="result">
-        <div class="place">#4 <span>/ 4th</span></div>
-        <div class="event">HASBLCTF26</div>
-        <div class="pts">8,150 pts</div>
-      </div>
-      <div class="result">
-        <div class="place">#5 <span>/ 5th</span></div>
-        <div class="event">CryptoNite CTF 2026</div>
-        <div class="pts">3,356 pts</div>
-      </div>
-      <div class="result">
-        <div class="place">#6 <span>/ 6th</span></div>
-        <div class="event">plfanzen CFT 2026</div>
-        <div class="pts">3,707 pts</div>
-      </div>
-    </div>    
-  </div>
-</section>
-
+<!-- ARSENAL / SKILL MATRIX -->
 <section id="skills">
-  <div class="wrap reveal">
-    <div class="sec-tag">Toolkit</div>
-    <div class="skill-grid">
-      <div class="skill-card">
-        <h4>Offensive tools</h4>
-        <ul>
-          <li>Burp Suite</li><li>Nmap</li><li>Metasploit Framework</li>
-          <li>Nessus Essentials</li><li>Wireshark</li><li>OWASP ZAP</li>
+  <div class="wrap">
+    <div class="sec-header">
+      <div class="sec-tag">Technical Arsenal</div>
+      <h2 class="sec-title">AppSec capabilities &amp; <span>technology stack</span></h2>
+    </div>
+
+    <div class="skills-grid">
+      <div class="skill-category">
+        <h4>Application &amp; API Security</h4>
+        <ul class="skill-list">
+          <li><span>OWASP Top 10 &amp; API Top 10</span> <span class="level">Core Focus</span></li>
+          <li><span>BOLA / IDOR Differential Analysis</span> <span class="level">Specialist</span></li>
+          <li><span>Mass Assignment Verification</span> <span class="level">Specialist</span></li>
+          <li><span>GraphQL &amp; AST Security</span> <span class="level">Advanced</span></li>
+          <li><span>JWT Verification (alg:none / kid)</span> <span class="level">Advanced</span></li>
+          <li><span>SQLi, XSS, CSRF, Path Traversal</span> <span class="level">Proficient</span></li>
+          <li><span>CVSS v3.1 Scoring &amp; Triage</span> <span class="level">Proficient</span></li>
         </ul>
       </div>
-      <div class="skill-card">
-        <h4>Domain knowledge</h4>
-        <ul>
-          <li>OWASP Top 10 &amp; API Top 10</li><li>BOLA / IDOR</li>
-          <li>SQLi, XSS, CSRF</li><li>JWT &amp; auth vulnerabilities</li>
-          <li>GraphQL security</li><li>CVSS v3.1 scoring</li>
+
+      <div class="skill-category">
+        <h4>Offensive &amp; Analysis Tools</h4>
+        <ul class="skill-list">
+          <li><span>Burp Suite (Repeater, Intruder)</span> <span class="level">Primary</span></li>
+          <li><span>Nmap &amp; Network Mapping</span> <span class="level">Proficient</span></li>
+          <li><span>Wireshark &amp; Scapy</span> <span class="level">Proficient</span></li>
+          <li><span>Playwright Chromium (Session Auth)</span> <span class="level">Proficient</span></li>
+          <li><span>Kali Linux Environment</span> <span class="level">Daily OS</span></li>
+          <li><span>Metasploit Framework</span> <span class="level">Offensive</span></li>
+          <li><span>Nessus Essentials</span> <span class="level">Assessment</span></li>
         </ul>
       </div>
-      <div class="skill-card">
-        <h4>Build stack</h4>
-        <ul>
-          <li>Python</li><li>Bash scripting</li><li>Docker</li>
-          <li>Git / GitHub Actions</li><li>Kali Linux</li><li>C</li>
+
+      <div class="skill-category">
+        <h4>Engineering &amp; DevSecOps</h4>
+        <ul class="skill-list">
+          <li><span>Python 3.11+ (FastAPI, httpx)</span> <span class="level">Primary</span></li>
+          <li><span>TypeScript 5.x &amp; React 19</span> <span class="level">Full-Stack</span></li>
+          <li><span>Docker &amp; Container Isolation</span> <span class="level">DevOps</span></li>
+          <li><span>GitHub Actions CI/CD Gates</span> <span class="level">DevSecOps</span></li>
+          <li><span>PostgreSQL 16 &amp; SQLAlchemy</span> <span class="level">Database</span></li>
+          <li><span>Linux Systems (iptables, bash)</span> <span class="level">SysAdmin</span></li>
+          <li><span>Git / Version Control</span> <span class="level">Workflow</span></li>
         </ul>
       </div>
     </div>
   </div>
 </section>
 
+<!-- CERTIFICATIONS & EDUCATION -->
 <section id="certs">
-  <div class="wrap reveal">
-    <div class="sec-tag">Certifications</div>
-    <div class="cert-row">
-      <div class="cert-item">
-        <div>
+  <div class="wrap">
+    <div class="sec-header">
+      <div class="sec-tag">Credentials &amp; Education</div>
+      <h2 class="sec-title">Certifications &amp; <span>academic background</span></h2>
+    </div>
+
+    <div class="certs-grid">
+      <div class="cert-card">
+        <div class="cert-info">
+          <h4>Certified API Security Analyst (CASA)</h4>
+          <div class="issuer">APIsec University · Credential Issued</div>
+        </div>
+        <div class="cert-badge-active">Verified</div>
+      </div>
+
+      <div class="cert-card">
+        <div class="cert-info">
           <h4>Practical Junior Penetration Tester (PJPT)</h4>
-          <div class="issuer">TCM Security</div>
+          <div class="issuer">TCM Security · Practical Exam Track</div>
         </div>
-        <div class="cert-status">In progress</div>
+        <div class="cert-badge-progress">In Progress</div>
       </div>
-      <div class="cert-item">
-        <div>
+
+      <div class="cert-card">
+        <div class="cert-info">
           <h4>Cisco Ethical Hacker</h4>
-          <div class="issuer">Cisco</div>
+          <div class="issuer">Cisco Networking Academy</div>
         </div>
+        <div class="cert-badge-active">Certified</div>
       </div>
-      <div class="cert-item">
-        <div>
+
+      <div class="cert-card">
+        <div class="cert-info">
           <h4>Cisco Networking Fundamentals</h4>
-          <div class="issuer">Cisco</div>
+          <div class="issuer">Cisco Networking Academy</div>
         </div>
+        <div class="cert-badge-active">Certified</div>
       </div>
+    </div>
+
+    <div style="margin-top: 32px; background: var(--surface); border: 1px solid var(--surface-border); border-radius: 12px; padding: 24px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+      <div>
+        <h4 style="font-size: 17px; font-weight: 700; margin-bottom: 4px;">Amrita Vishwa Vidyapeetham, Coimbatore</h4>
+        <p style="font-size: 13.5px; color: var(--text-muted);">B.Tech in Computer Science and Engineering — Cyber Security · CGPA: 7.5 / 10</p>
+      </div>
+      <span class="meta-badge">Expected Graduation: 2027</span>
     </div>
   </div>
 </section>
 
+<!-- CONTACT & FOOTER -->
 <footer id="contact">
-  <div class="wrap reveal">
-    <div class="sec-tag">Contact</div>
-    <h2 class="contact-title">Let's Connect...</h2>
-    <div class="contact-links">
-      <a class="btn primary" href="mailto:goutham240605@gmail.com">goutham240605@gmail.com</a>
-      <a class="btn ghost" href="tel:+918675115970">+91 8675115970</a>
-      <a class="btn ghost" href="https://www.linkedin.com/in/gouthaman-g-0296b1288" target="_blank" rel="noopener">LinkedIn</a>
-      <a class="btn ghost" href="https://team-hunter.tech" target="_blank" rel="noopener">Team Hunter</a>
+  <div class="wrap">
+    <div class="footer-cta">
+      <h2>Let's build secure software together.</h2>
+      <p>
+        I am actively looking for full-time opportunities, internships, and research collaborations in 
+        <strong>Application Security (AppSec)</strong>, <strong>API Penetration Testing</strong>, and <strong>Product Security</strong>.
+      </p>
+      <div class="contact-links-grid">
+        <a href="mailto:goutham240605@gmail.com" class="btn btn-primary">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          <span>goutham240605@gmail.com</span>
+        </a>
+        <a href="tel:+918675115970" class="btn btn-secondary">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+          <span>+91 8675115970</span>
+        </a>
+        <a href="https://www.linkedin.com/in/gouthaman-g-0296b1288" class="btn btn-secondary" target="_blank" rel="noopener">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.762-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+          <span>LinkedIn</span>
+        </a>
+        <a href="https://github.com/Gouthaman2465" class="btn btn-secondary" target="_blank" rel="noopener">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          <span>GitHub</span>
+        </a>
+      </div>
     </div>
-    <div class="foot-bottom">
-      <span>© 2026 Gouthaman G</span>
-      <span>Tiruchirappalli, India</span>
+
+    <div class="foot-meta">
+      <div>© 2026 Gouthaman G. Built with precision for Application Security.</div>
+      <div>Tiruchirappalli &amp; Coimbatore, India</div>
     </div>
   </div>
 </footer>
 
 <script>
-// scroll progress rail
-const railFill = document.getElementById('railFill');
-function updateRail(){
+// Scroll Progress Indicator
+const scrollFill = document.getElementById('scrollFill');
+function onScroll() {
   const scrollTop = window.scrollY;
   const docHeight = document.documentElement.scrollHeight - window.innerHeight;
   const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-  railFill.style.height = pct + '%';
+  scrollFill.style.width = pct + '%';
 }
-window.addEventListener('scroll', updateRail, { passive:true });
-updateRail();
+window.addEventListener('scroll', onScroll, { passive: true });
+onScroll();
 
-// scroll reveal
-const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const observer = new IntersectionObserver((entries)=>{
-  entries.forEach(entry=>{
-    if(entry.isIntersecting){
-      entry.target.classList.add('visible');
-      observer.unobserve(entry.target);
+// Interactive Terminal Tab Switcher
+const termPresets = {
+  differential: `<div><span class="term-prompt">$ aegis-scanner</span> --target https://api.production-target.internal/v2 --protocol=REST,GraphQL</div>
+<div><span class="term-cyan">[*]</span> Loading OpenAPI 3.0 specification &amp; GraphQL Schema introspection...</div>
+<div><span class="term-cyan">[*]</span> Initialized Multi-Tenant Context: User_A (Tenant: Alpha) | User_B (Tenant: Beta)</div>
+<div><span class="term-prompt">[1/3]</span> Executing Action-Level State Differential Replay on <span class="code-highlight">/api/v2/orders/{order_id}</span></div>
+<div><span class="term-warn">[!] BOLA / IDOR DETECTED:</span> User_B successfully fetched Order #84920 belonging to User_A (HTTP 200)</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;↳ State Verification: GET-PUT-GET payload confirmed mutation of unowned resource</div>
+<div><span class="term-crit">[CRITICAL]</span> OWASP API1:2023 Broken Object Level Authorization confirmed. [CVSS v3.1: 8.6]</div>
+<div><span class="term-success">[✓]</span> Generating evidence payload &amp; tripping GitHub Actions DevSecOps security gate...</div>`,
+
+  graphql: `<div><span class="term-prompt">$ python3 -m gateway.zero_trust_proxy</span> --port 8080 --upstream http://backend:4000/graphql</div>
+<div><span class="term-cyan">[*]</span> Zero-Trust GraphQL Gateway active on :8080 [Schema Validation: ENFORCED]</div>
+<div><span class="term-prompt">[INCOMING]</span> POST /graphql from User(id="user_beta_99")</div>
+<div><span class="term-cyan">[*]</span> AST Query Canonicalization: Flattening aliases &amp; inline fragments...</div>
+<div><span class="term-warn">[!] BLOCKED:</span> Operation requested Object ID "account_alpha_12" not owned by caller context.</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;↳ Rule violated: <code>SchemaOwnerCheck(Object="Account", Argument="id")</code></div>
+<div><span class="term-success">[✓]</span> 403 Forbidden returned before execution reached downstream resolvers. Zero BOLA leakage.</div>`,
+
+  jwt: `<div><span class="term-prompt">$ aegis-jwt-tool</span> --analyze --token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</div>
+<div><span class="term-cyan">[*]</span> Decoding Header: {"alg": "HS256", "typ": "JWT"} | Payload: {"sub": "analyst", "role": "user"}</div>
+<div><span class="term-prompt">[*] Testing Vector 1:</span> Algorithm Confusion (RS256 Public Key utilized as HMAC Secret)... <span class="term-crit">[VULNERABLE]</span></div>
+<div><span class="term-prompt">[*] Testing Vector 2:</span> None Algorithm tampering (alg: none, None, NONE)... <span class="term-success">[SAFE]</span></div>
+<div><span class="term-prompt">[*] Testing Vector 3:</span> Key ID (kid) parameter directory traversal injection... <span class="term-success">[SAFE]</span></div>
+<div><span class="term-crit">[ALERT]</span> High-severity JWT forgeability detected. Elevated privileges to role: 'admin' achieved.</div>`,
+
+  helm: `<div><span class="term-prompt">$ helm-copilot</span> --poll-alerts --source=linkedin,naukri,internshala</div>
+<div><span class="term-cyan">[*]</span> Ingested 14 job alerts from Gmail. Applying strict Cyber Security semantic filter...</div>
+<div><span class="term-cyan">[*]</span> Filtered out 9 non-cyber / 3+ YoE roles. 5 relevant fresher/associate Cyber roles found.</div>
+<div><span class="term-cyan">[*]</span> Semantic scoring via Google Gemini 1.5/2.0 Flash (Free Tier)...</div>
+<div><span class="term-prompt">[+] [Score: 9.4/10]</span> Application Security Engineer (Associate) @ CloudDefense</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;↳ Matched: BOLA/IDOR, API Pentesting, FastAPI, Burp Suite, Playwright session recording</div>
+<div><span class="term-cyan">[*]</span> Launching Playwright in strict platform-compliance mode (no illegal bot submit)...</div>
+<div><span class="term-success">[✓]</span> Application form 90% prefilled from pure_cyber_profile.json</div>
+<div><span class="term-warn">[!] Human-in-the-Loop Safe Checkpoint:</span> Browser safely paused before final submit. Ready for review!</div>`
+};
+
+function switchTerm(key) {
+  const output = document.getElementById('termOutput');
+  const tabs = document.querySelectorAll('.term-tab');
+  tabs.forEach(t => t.classList.remove('active'));
+  
+  const selectedTab = event.currentTarget;
+  if (selectedTab) selectedTab.classList.add('active');
+  
+  if (termPresets[key]) {
+    output.innerHTML = termPresets[key];
+  }
+}
+
+// Active Navlink on Scroll
+const sections = document.querySelectorAll('section, header');
+const navLinks = document.querySelectorAll('.navlinks a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    const sectionTop = section.offsetTop - 120;
+    if (pageYOffset >= sectionTop) {
+      current = section.getAttribute('id') || '';
     }
   });
-}, { threshold: 0.15 });
-
-document.querySelectorAll('.reveal, .reveal-stagger').forEach(el=>{
-  if(reduce){ el.classList.add('visible'); }
-  else{ observer.observe(el); }
-});
-
-// magnetic buttons
-if(!reduce && window.matchMedia('(pointer:fine)').matches){
-  document.querySelectorAll('.btn').forEach(btn=>{
-    btn.addEventListener('mousemove', (e)=>{
-      const rect = btn.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width/2;
-      const y = e.clientY - rect.top - rect.height/2;
-      btn.style.transform = `translate(${x*0.25}px, ${y*0.35}px)`;
-    });
-    btn.addEventListener('mouseleave', ()=>{
-      btn.style.transform = 'translate(0,0)';
-    });
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === `#${current}`) {
+      link.classList.add('active');
+    }
   });
-}
+}, { passive: true });
 </script>
 
 </body>
